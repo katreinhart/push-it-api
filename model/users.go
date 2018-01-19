@@ -56,7 +56,7 @@ func CreateUser(b []byte) ([]byte, error) {
 	}
 
 	// create transformed version of user structure, marshal it into JSON and return
-	_user := transformedUser{ID: user.ID, Email: user.Email, Goal: user.Goal, Token: t}
+	_user := transformedUser{ID: user.ID, Email: user.Email, Goal: user.Goal, Level: user.Level, Token: t}
 	js, err := json.Marshal(_user)
 	return js, err
 }
@@ -91,6 +91,45 @@ func LoginUser(b []byte) ([]byte, error) {
 	}
 	// create transmission friendly user struct
 	_user := transformedUser{ID: dbUser.ID, Email: dbUser.Email, Token: t}
+
+	// marshal user into JSON and return
+	js, err := json.Marshal(_user)
+	return js, err
+}
+
+// SetUserInfo takes info from the onboarding screen and updates the database.
+func SetUserInfo(b []byte) ([]byte, error) {
+
+	// Declare data types and unmarshal JSON into user struct
+	var user, dbUser userModel
+	err := json.Unmarshal(b, &user)
+
+	if err != nil {
+		return []byte("{\"message\": \"Something went wrong.\"}"), err
+	}
+
+	db.First(&dbUser, "email = ?", user.Email)
+
+	// handle user not found error
+	if dbUser.ID == 0 {
+		return []byte("{\"message\": \"User not found in DB.\"}"), errors.New("Not found")
+	}
+
+	// See if password matches the hashed password from the database
+	match := checkPasswordHash(user.Password, dbUser.Password)
+	if !match {
+		return []byte("{\"message\": \"Check your inputs and try again.\"}"), errors.New("Unauthorized")
+	}
+
+	// update first name, level, and goal in the database
+	dbUser.Level = user.Level
+	dbUser.Goal = user.Goal
+	dbUser.Name = user.Name
+
+	db.Save(&dbUser)
+
+	// create transmission friendly user struct
+	_user := transformedUser{ID: dbUser.ID, Email: dbUser.Email, Name: user.Name, Level: user.Level, Goal: user.Goal}
 
 	// marshal user into JSON and return
 	js, err := json.Marshal(_user)

@@ -22,6 +22,7 @@ type (
 		Password string `json:"password"`
 		Name     string `json:"name"`
 		Goal     string `json:"primary_goal"`
+		Level    string `json:"level"`
 	}
 
 	transformedUser struct {
@@ -29,6 +30,7 @@ type (
 		Email string `json:"email"`
 		Name  string `json:"name"`
 		Goal  string `json:"goal"`
+		Level string `json:"level"`
 		Token string `json:"token"`
 	}
 
