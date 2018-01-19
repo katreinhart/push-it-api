@@ -9,6 +9,12 @@
 			"revisionTime": "2017-10-19T21:57:19Z"
 		},
 		{
+			"checksumSHA1": "bVayBU8lTVHNDai7umD17bwyws0=",
+			"path": "github.com/gorilla/mux",
+			"revision": "5ab525f4fb1678e197ae59401e9050fa0b6cb5fd",
+			"revisionTime": "2017-12-08T16:08:15Z"
+		},
+		{
 			"checksumSHA1": "KBZAPkgG/bO26yf2KYKLZPyQw9k=",
 			"path": "github.com/jinzhu/gorm",
 			"revision": "0a51f6cdc55d1650d9ed3b4c13026cfa9133b01e",
@@ -21,6 +27,12 @@
 			"revisionTime": "2017-10-10T13:28:39Z"
 		},
 		{
+			"checksumSHA1": "VIp1lZm6joWhlNdwhady8u//qRw=",
+			"path": "github.com/jinzhu/inflection",
+			"revision": "1c35d901db3da928c72a72d8458480cc9ade058f",
+			"revisionTime": "2017-01-02T12:52:26Z"
+		},
+		{
 			"checksumSHA1": "lti7jttRllUglFr1cQjC5TF+P3Q=",
 			"path": "github.com/joho/godotenv",
 			"revision": "06e67b5ef3bef2e1a8696e1c04b94b44cbc5d9a5",
@@ -31,6 +43,12 @@
 			"path": "github.com/katreinhart/push-it-api",
 			"revision": "7aa49aea9f4aec26392b0e31df85300260d5d082",
 			"revisionTime": "2018-01-19T19:24:39Z"
+		},
+		{
+			"checksumSHA1": "IfZcD4U1dtllJKlPNeD2aU4Jn98=",
+			"path": "github.com/lib/pq",
+			"revision": "83612a56d3dd153a94a629cd64925371c9adad78",
+			"revisionTime": "2017-11-26T05:04:59Z"
 		},
 		{
 			"checksumSHA1": "oCH3J96RWvO8W4xjix47PModpio=",
