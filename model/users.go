@@ -90,7 +90,7 @@ func LoginUser(b []byte) ([]byte, error) {
 		return []byte("{\"message\": \"Something went wrong with JWT.\"}"), err
 	}
 	// create transmission friendly user struct
-	_user := transformedUser{ID: dbUser.ID, Email: dbUser.Email, Token: t}
+	_user := transformedUser{ID: dbUser.ID, Email: dbUser.Email, Name: dbUser.Name, Goal: dbUser.Goal, Level: dbUser.Level, Token: t}
 
 	// marshal user into JSON and return
 	js, err := json.Marshal(_user)

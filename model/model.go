@@ -21,7 +21,7 @@ type (
 		Email    string `json:"email"`
 		Password string `json:"password"`
 		Name     string `json:"name"`
-		Goal     string `json:"primary_goal"`
+		Goal     string `json:"goal"`
 		Level    string `json:"level"`
 	}
 
