@@ -114,12 +114,7 @@ func SetUserInfo(b []byte) ([]byte, error) {
 	if dbUser.ID == 0 {
 		return []byte("{\"message\": \"User not found in DB.\"}"), errors.New("Not found")
 	}
-
-	// See if password matches the hashed password from the database
-	match := checkPasswordHash(user.Password, dbUser.Password)
-	if !match {
-		return []byte("{\"message\": \"Check your inputs and try again.\"}"), errors.New("Unauthorized")
-	}
+	// Here I should get JWT and make sure user matches. Will do that soon.
 
 	// update first name, level, and goal in the database
 	dbUser.Level = user.Level

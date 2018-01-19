@@ -42,7 +42,8 @@ func main() {
 	u := r.PathPrefix("/auth").Subrouter()
 	u.HandleFunc("/register", controller.CreateUser).Methods("POST")
 	u.HandleFunc("/login", controller.LoginUser).Methods("POST")
-	u.HandleFunc("/setinfo", controller.SetUserInfo).Methods("POST")
+
+	api.HandleFunc("/setinfo", controller.SetUserInfo).Methods("POST")
 
 	// JWT Middleware handles authorization configuration
 	jwtMiddleware := jwtmiddleware.New(jwtmiddleware.Options{
