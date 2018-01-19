@@ -1,1 +1,1 @@
-# PUSH_IT API
+# PUSH_IT API Backend (Go)
