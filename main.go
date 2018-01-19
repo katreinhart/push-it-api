@@ -9,6 +9,7 @@ import (
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"github.com/katreinhart/push-it-api/controller"
 	"github.com/rs/cors"
 )
 
@@ -38,8 +39,8 @@ func main() {
 
 	// api.HandleFunc("/queue", controller.FetchQueue).Methods("GET")
 
-	// u := r.PathPrefix("/auth").Subrouter()
-	// u.HandleFunc("/register", controller.CreateUser).Methods("POST")
+	u := r.PathPrefix("/auth").Subrouter()
+	u.HandleFunc("/register", controller.CreateUser).Methods("POST")
 	// u.HandleFunc("/login", controller.LoginUser).Methods("POST")
 
 	// JWT Middleware handles authorization configuration
