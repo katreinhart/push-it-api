@@ -56,7 +56,7 @@ func CreateUser(b []byte) ([]byte, error) {
 	}
 
 	// create transformed version of user structure, marshal it into JSON and return
-	_user := transformedUser{ID: user.ID, Email: user.Email, Password: user.Password, Goal: user.Goal}
+	_user := transformedUser{ID: user.ID, Email: user.Email, Goal: user.Goal, Token: t}
 	js, err := json.Marshal(_user)
 	return js, err
 }
@@ -81,7 +81,6 @@ func createAndSignJWT(user userModel) (string, error) {
 	e := time.Now().Add(time.Hour * 24).Unix()
 	c := CustomClaims{
 		user.ID,
-		user.Admin,
 		jwt.StandardClaims{
 			ExpiresAt: e,
 		},

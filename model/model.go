@@ -4,8 +4,12 @@ import (
 	"fmt"
 	"os"
 
+	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/jinzhu/gorm"
 	"github.com/joho/godotenv"
+
+	// importing postgres dialect for GORM
+	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
 // declare DB
@@ -25,6 +29,7 @@ type (
 		Email string `json:"email"`
 		Name  string `json:"name"`
 		Goal  string `json:"goal"`
+		Token string `json:"token"`
 	}
 
 	// workout struct {
@@ -61,6 +66,12 @@ type (
 	// 	Exercise   uint      `json:"exercise_id"`
 	// 	GoalWeight uint      `json:"goal_weight"`
 	// }
+
+	// CustomClaims for JWT handling
+	CustomClaims struct {
+		UID uint `json:"uid"`
+		jwt.StandardClaims
+	}
 )
 
 // init function runs at setup; connects to database
@@ -81,7 +92,7 @@ func init() {
 	db, err = gorm.Open("postgres", dbString)
 	if err != nil {
 		fmt.Println(err.Error())
-		panic("Unable to connect to dang old DB")
+		panic("Unable to connect to DB")
 	}
 
 	db.AutoMigrate(&userModel{})

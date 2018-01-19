@@ -4,9 +4,10 @@ import (
 	"bytes"
 	"net/http"
 
-	"github.com/katreinhart/gorilla-api/model"
+	"github.com/katreinhart/push-it-api/model"
 )
 
+// CreateUser handles POST requests to /auth/register
 func CreateUser(w http.ResponseWriter, r *http.Request) {
 	// Read in http request body
 	buf := new(bytes.Buffer)
@@ -18,6 +19,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	handleErrorAndRespond(js, err, w)
 }
 
+// LoginUser handles POST requests to /auth/login
 func LoginUser(w http.ResponseWriter, r *http.Request) {
 
 }
