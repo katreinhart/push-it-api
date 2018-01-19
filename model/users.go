@@ -61,6 +61,42 @@ func CreateUser(b []byte) ([]byte, error) {
 	return js, err
 }
 
+// LoginUser takes info from controller and returns a token if user is who they claim to be
+func LoginUser(b []byte) ([]byte, error) {
+
+	// Declare data types and unmarshal JSON into user struct
+	var user, dbUser userModel
+	err := json.Unmarshal(b, &user)
+
+	if err != nil {
+		return []byte("{\"message\": \"Something went wrong.\"}"), err
+	}
+
+	db.First(&dbUser, "email = ?", user.Email)
+
+	// handle user not found error
+	if dbUser.ID == 0 {
+		return []byte("{\"message\": \"User not found in DB.\"}"), errors.New("Not found")
+	}
+
+	// See if password matches the hashed password from the database
+	match := checkPasswordHash(user.Password, dbUser.Password)
+	if !match {
+		return []byte("{\"message\": \"Check your inputs and try again.\"}"), errors.New("Unauthorized")
+	}
+	// Create and sign JWT; handle any error
+	t, err := createAndSignJWT(dbUser)
+	if err != nil {
+		return []byte("{\"message\": \"Something went wrong with JWT.\"}"), err
+	}
+	// create transmission friendly user struct
+	_user := transformedUser{ID: dbUser.ID, Email: dbUser.Email, Token: t}
+
+	// marshal user into JSON and return
+	js, err := json.Marshal(_user)
+	return js, err
+}
+
 // --------------------- Helper Functions ---------------------
 // user login password helper functions
 // from https://gowebexamples.com/password-hashing/

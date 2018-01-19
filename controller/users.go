@@ -22,4 +22,12 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 // LoginUser handles POST requests to /auth/login
 func LoginUser(w http.ResponseWriter, r *http.Request) {
 
+	// Read in http request body
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(r.Body)
+	b := []byte(buf.String())
+
+	// Login user in model
+	js, err := model.LoginUser(b)
+	handleErrorAndRespond(js, err, w)
 }
