@@ -41,11 +41,17 @@ type (
 	// 	End   time.Time `json:"finish_time"`
 	// }
 
-	// exercise struct {
-	// 	gorm.Model
-	// 	Name string `json:"ex_name"`
-	// 	Link string `json:"info_url"`
-	// }
+	exercise struct {
+		gorm.Model
+		Name string `json:"ex_name"`
+		Link string `json:"info_url"`
+	}
+
+	transformedExercise struct {
+		ID   uint   `json:"id"`
+		Name string `json:"ex_name"`
+		Link string `json:"info_url"`
+	}
 
 	// workoutExercise struct {
 	// 	gorm.Model
@@ -98,4 +104,5 @@ func init() {
 	}
 
 	db.AutoMigrate(&userModel{})
+	db.AutoMigrate(&exercise{})
 }
