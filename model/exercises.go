@@ -36,7 +36,7 @@ func FetchSingleExercise(id string) ([]byte, error) {
 	db.First(&exercise, id)
 
 	if exercise.ID == 0 {
-		// handle not found
+		return nil, errors.New("Not found")
 	}
 
 	_exercise := transformedExercise{ID: exercise.ID, Name: exercise.Name, Link: exercise.Link}
@@ -54,7 +54,7 @@ func CreateExercise(b []byte) ([]byte, error) {
 
 	err := json.Unmarshal(b, &exercise)
 	if err != nil {
-		// handle error case
+		return nil, errors.New("Something went wrong")
 	}
 
 	db.Save(&exercise)
