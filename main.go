@@ -38,6 +38,7 @@ func main() {
 	api := r.PathPrefix("/api").Subrouter()
 
 	api.HandleFunc("/exercises", controller.ListExercises).Methods("GET")
+	api.HandleFunc("/exercises/{id}", controller.FetchSingleExercise).Methods("GET")
 	api.HandleFunc("/exercises", controller.CreateExercise).Methods("POST")
 
 	u := r.PathPrefix("/auth").Subrouter()

@@ -4,12 +4,23 @@ import (
 	"bytes"
 	"net/http"
 
+	"github.com/gorilla/mux"
 	"github.com/katreinhart/push-it-api/model"
 )
 
 // ListExercises is index route for /api/exercises
 func ListExercises(w http.ResponseWriter, r *http.Request) {
 	js, err := model.ListExercises()
+	handleErrorAndRespond(js, err, w)
+}
+
+// FetchSingleExercise is GET one route for /api/exercises
+func FetchSingleExercise(w http.ResponseWriter, r *http.Request) {
+	// get the URL parameter from the http request
+	vars := mux.Vars(r)
+	id, _ := vars["id"]
+
+	js, err := model.FetchSingleExercise(id)
 	handleErrorAndRespond(js, err, w)
 }
 

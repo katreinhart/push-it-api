@@ -29,9 +29,22 @@ func ListExercises() ([]byte, error) {
 	return js, err
 }
 
-// func FetchSingleExercise(id uint) ([]byte, error) {
+// FetchSingleExercise finds exercise matching id in database and returns JSON
+func FetchSingleExercise(id string) ([]byte, error) {
+	var exercise exercise
 
-// }
+	db.First(&exercise, id)
+
+	if exercise.ID == 0 {
+		// handle not found
+	}
+
+	_exercise := transformedExercise{ID: exercise.ID, Name: exercise.Name, Link: exercise.Link}
+
+	js, err := json.Marshal(_exercise)
+
+	return js, err
+}
 
 // CreateExercise adds an exercise to the database.
 func CreateExercise(b []byte) ([]byte, error) {
