@@ -7,9 +7,11 @@ import (
 	"github.com/katreinhart/push-it-api/model"
 )
 
-// func ListExercises(w http.ResponseWriter, r *http.Request) {
-
-// }
+// ListExercises is index route for /api/exercises
+func ListExercises(w http.ResponseWriter, r *http.Request) {
+	js, err := model.ListExercises()
+	handleErrorAndRespond(js, err, w)
+}
 
 // CreateExercise handles POST calls to /api/exercises
 func CreateExercise(w http.ResponseWriter, r *http.Request) {
