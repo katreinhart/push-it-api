@@ -37,7 +37,7 @@ func main() {
 	// s is a subrouter to handle question routes
 	api := r.PathPrefix("/api").Subrouter()
 
-	api.HandleFunc("/exercises", controller.ListExercises).Methods("GET")
+	api.HandleFunc("/exercises", controller.CreateExercise).Methods("POST")
 
 	u := r.PathPrefix("/auth").Subrouter()
 	u.HandleFunc("/register", controller.CreateUser).Methods("POST")
