@@ -114,7 +114,7 @@ func SetUserInfo(b []byte) ([]byte, error) {
 	if dbUser.ID == 0 {
 		return []byte("{\"message\": \"User not found in DB.\"}"), errors.New("Not found")
 	}
-	// Here I should get JWT and make sure user matches. Will do that soon.
+	// Here I should get JWT and make sure user matches. This should be done in the controller.
 
 	// update first name, level, and goal in the database
 	dbUser.Level = user.Level

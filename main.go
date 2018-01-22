@@ -45,7 +45,12 @@ func main() {
 	u.HandleFunc("/register", controller.CreateUser).Methods("POST")
 	u.HandleFunc("/login", controller.LoginUser).Methods("POST")
 
+	// User functions
 	api.HandleFunc("/setinfo", controller.SetUserInfo).Methods("POST")
+
+	// Goal functions
+	api.HandleFunc("/user/goals", controller.GetSecondaryGoals).Methods("GET")
+	api.HandleFunc("/user/goals", controller.PostSecondaryGoals).Methods("POST")
 
 	// JWT Middleware handles authorization configuration
 	jwtMiddleware := jwtmiddleware.New(jwtmiddleware.Options{

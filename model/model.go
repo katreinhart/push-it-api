@@ -3,6 +3,7 @@ package model
 import (
 	"fmt"
 	"os"
+	"time"
 
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/jinzhu/gorm"
@@ -67,13 +68,29 @@ type (
 	// 	RepsCompleted     uint `json:"reps_comp"`
 	// }
 
-	// secondaryGoal struct {
-	// 	gorm.Model
-	// 	SetDate    time.Time `json:"set_date"`
-	// 	GoalDate   time.Time `json:"goal_date"`
-	// 	Exercise   uint      `json:"exercise_id"`
-	// 	GoalWeight uint      `json:"goal_weight"`
-	// }
+	postedGoals struct {
+		UserID string        `json:"uid"`
+		Goal1  secondaryGoal `json:"goal1"`
+		Goal2  secondaryGoal `json:"goal2"`
+	}
+
+	secondaryGoal struct {
+		gorm.Model
+		UserID     string    `json:"uid"`
+		SetDate    time.Time `json:"set_date"`
+		GoalDate   time.Time `json:"goal_date"`
+		Exercise   exercise  `json:"exercise"`
+		GoalWeight uint      `json:"goal_weight"`
+	}
+
+	transformedGoal struct {
+		GoalID     uint      `json:"goal_id"`
+		UserID     string    `json:"uid"`
+		SetDate    time.Time `json:"set_date"`
+		GoalDate   time.Time `json:"goal_date"`
+		Exercise   exercise  `json:"exercise"`
+		GoalWeight uint      `json:"goal_weight"`
+	}
 
 	// CustomClaims for JWT handling
 	CustomClaims struct {
@@ -105,4 +122,5 @@ func init() {
 
 	db.AutoMigrate(&userModel{})
 	db.AutoMigrate(&exercise{})
+	db.AutoMigrate(&secondaryGoal{})
 }
