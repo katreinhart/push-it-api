@@ -2,6 +2,7 @@ package controller
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -37,5 +38,20 @@ func PostSecondaryGoals(w http.ResponseWriter, r *http.Request) {
 
 	// Fetch secondary goals from model
 	js, err := model.PostSecondaryGoals(uid, b)
+	handleErrorAndRespond(js, err, w)
+}
+
+// SetPrimaryGoal sets the user's primary goal in the database
+func SetPrimaryGoal(w http.ResponseWriter, r *http.Request) {
+	uid, err := GetUIDFromBearerToken(r)
+	if err != nil {
+		handleErrorAndRespond(nil, errors.New("Not found"), w)
+	}
+
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(r.Body)
+	b := []byte(buf.String())
+
+	js, err := model.SetPrimaryGoal(uid, b)
 	handleErrorAndRespond(js, err, w)
 }

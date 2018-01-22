@@ -97,6 +97,10 @@ type (
 		GoalWeight int       `json:"goal_weight"`
 	}
 
+	updatePrimaryGoal struct {
+		Goal string `json:"goal"`
+	}
+
 	// CustomClaims for JWT handling
 	CustomClaims struct {
 		UID uint `json:"uid"`

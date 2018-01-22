@@ -18,6 +18,7 @@ func GetSecondaryGoals(uid string) ([]byte, error) {
 
 	if len(goals) == 0 {
 		// respond with 404
+		return nil, errors.New("Not found")
 	}
 
 	for _, item := range goals {
@@ -74,4 +75,21 @@ func PostSecondaryGoals(uid string, b []byte) ([]byte, error) {
 
 	// Return a success message (maybe edit later to return the question?)
 	return []byte("{\"message\": \"Goals successfully added\"}"), nil
+}
+
+// SetPrimaryGoal updates the user's primary goal in the database.
+func SetPrimaryGoal(uid string, b []byte) ([]byte, error) {
+	var user userModel
+	var newGoal updatePrimaryGoal
+
+	err := json.Unmarshal(b, &newGoal)
+
+	if err != nil {
+		return nil, errors.New("Something went wrong")
+	}
+	db.First(&user, "id = ?", uid)
+	db.Model(&user).Update("goal", newGoal.Goal)
+
+	return []byte("{\"message\": \"Goal successfully updated\"}"), nil
+
 }

@@ -51,6 +51,7 @@ func main() {
 	// Goal functions
 	api.HandleFunc("/user/goals", controller.GetSecondaryGoals).Methods("GET")
 	api.HandleFunc("/user/goals", controller.PostSecondaryGoals).Methods("POST")
+	api.HandleFunc("/user/primarygoal", controller.SetPrimaryGoal).Methods("POST")
 
 	// JWT Middleware handles authorization configuration
 	jwtMiddleware := jwtmiddleware.New(jwtmiddleware.Options{
