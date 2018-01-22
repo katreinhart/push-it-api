@@ -35,7 +35,6 @@ func PostSecondaryGoals(w http.ResponseWriter, r *http.Request) {
 	buf.ReadFrom(r.Body)
 	b := []byte(buf.String())
 
-	fmt.Println("Got stuff from body I think")
 	// Fetch secondary goals from model
 	js, err := model.PostSecondaryGoals(uid, b)
 	handleErrorAndRespond(js, err, w)

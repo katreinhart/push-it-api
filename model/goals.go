@@ -4,6 +4,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"os"
+	"strconv"
+	"time"
 )
 
 // GetSecondaryGoals fetches the secondary goals in the database.
@@ -18,7 +21,8 @@ func GetSecondaryGoals(uid string) ([]byte, error) {
 	}
 
 	for _, item := range goals {
-		_goals = append(_goals, transformedGoal{GoalID: item.ID, UserID: item.UserID, GoalDate: item.GoalDate, GoalWeight: item.GoalWeight, Exercise: item.Exercise})
+		id := int(item.ID)
+		_goals = append(_goals, transformedGoal{GoalID: id, UserID: item.UserID, GoalDate: item.GoalDate, GoalWeight: item.GoalWeight, Exercise: item.Exercise})
 	}
 
 	js, err := json.Marshal(_goals)
@@ -29,22 +33,34 @@ func GetSecondaryGoals(uid string) ([]byte, error) {
 // PostSecondaryGoals creates or updates goals in the database.
 func PostSecondaryGoals(uid string, b []byte) ([]byte, error) {
 	fmt.Println("Post secondary goals MODEL function")
+
 	var postGoals postedGoals
-	var goals []secondaryGoal
+	var goal1, goal2 secondaryGoal
+
 	// Unmarshal the JSON formatted data b into the struct
 	err := json.Unmarshal(b, &postGoals)
 
 	if err != nil {
 		// handle error
 		fmt.Println("JSON error")
+		fmt.Fprintf(os.Stdout, "%#v", postGoals)
 		return nil, errors.New("error marshaling json object")
 	}
 
-	goals[0] = secondaryGoal{UserID: uid, Exercise: postGoals.Goal1.Exercise, GoalWeight: postGoals.Goal1.GoalWeight, GoalDate: postGoals.Goal1.GoalDate}
-	goals[0] = secondaryGoal{UserID: uid, Exercise: postGoals.Goal2.Exercise, GoalWeight: postGoals.Goal2.GoalWeight, GoalDate: postGoals.Goal2.GoalDate}
+	// Calculate the dates
+	date1, err := time.Parse("Jan 01, 2018", postGoals.Goal1.GoalDate)
+	date2, err := time.Parse("Jan 01, 2018", postGoals.Goal2.GoalDate)
 
-	goals[0].UserID = uid
-	goals[1].UserID = uid
+	weight1, err := strconv.Atoi(postGoals.Goal1.GoalWeight)
+	weight2, err := strconv.Atoi(postGoals.Goal2.GoalWeight)
+
+	if err != nil {
+		// handle date error
+	}
+
+	// Transform data to db format
+	goal1 = secondaryGoal{UserID: postGoals.Goal1.UserID, GoalDate: date1, GoalWeight: weight1, Exercise: postGoals.Goal1.Exercise}
+	goal2 = secondaryGoal{UserID: postGoals.Goal2.UserID, GoalDate: date2, GoalWeight: weight2, Exercise: postGoals.Goal2.Exercise}
 
 	// Handle error if any
 	if err != nil {
@@ -52,8 +68,8 @@ func PostSecondaryGoals(uid string, b []byte) ([]byte, error) {
 		return []byte("{\"message\": \"Something went wrong.\"}"), err
 	}
 
-	db.Save(&goals[0])
-	db.Save(&goals[1])
+	db.Save(&goal1)
+	db.Save(&goal2)
 	fmt.Println("DB saved")
 
 	// Return a success message (maybe edit later to return the question?)

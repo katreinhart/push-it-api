@@ -69,27 +69,32 @@ type (
 	// }
 
 	postedGoals struct {
-		UserID string        `json:"uid"`
-		Goal1  secondaryGoal `json:"goal1"`
-		Goal2  secondaryGoal `json:"goal2"`
+		Goal1 postedBasicGoal `json:"goal1"`
+		Goal2 postedBasicGoal `json:"goal2"`
+	}
+
+	postedBasicGoal struct {
+		UserID     string `json:"uid"`
+		GoalDate   string `json:"goal_date"`
+		Exercise   string `json:"exercise"`
+		GoalWeight string `json:"goal_weight"`
 	}
 
 	secondaryGoal struct {
 		gorm.Model
 		UserID     string    `json:"uid"`
-		SetDate    time.Time `json:"set_date"`
 		GoalDate   time.Time `json:"goal_date"`
-		Exercise   exercise  `json:"exercise"`
-		GoalWeight uint      `json:"goal_weight"`
+		Exercise   string    `json:"exercise"`
+		GoalWeight int       `json:"goal_weight"`
 	}
 
 	transformedGoal struct {
-		GoalID     uint      `json:"goal_id"`
+		GoalID     int       `json:"goal_id"`
 		UserID     string    `json:"uid"`
 		SetDate    time.Time `json:"set_date"`
 		GoalDate   time.Time `json:"goal_date"`
-		Exercise   exercise  `json:"exercise"`
-		GoalWeight uint      `json:"goal_weight"`
+		Exercise   string    `json:"exercise"`
+		GoalWeight int       `json:"goal_weight"`
 	}
 
 	// CustomClaims for JWT handling
