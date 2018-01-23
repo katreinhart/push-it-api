@@ -45,6 +45,13 @@ type (
 		Completed bool      `json:"completed"`
 	}
 
+	updateWorkoutModel struct {
+		ID        string `json:"id"`
+		Completed bool   `json:"completed"`
+		Rating    int    `json:"rating"`
+		Comments  string `json:"comments"`
+	}
+
 	completedWorkout struct {
 		User      string                       `json:"uid"`
 		Start     time.Time                    `json:"start_time"`

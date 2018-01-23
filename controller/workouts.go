@@ -69,3 +69,26 @@ func AddExerciseSet(w http.ResponseWriter, r *http.Request) {
 
 	handleErrorAndRespond(js, err, w)
 }
+
+// MarkWorkoutAsCompleted handles PUT requests to workout and marks as completed if appropriate
+func MarkWorkoutAsCompleted(w http.ResponseWriter, r *http.Request) {
+
+	// Get user ID from token
+	uid, err := GetUIDFromBearerToken(r)
+	if err != nil {
+		handleErrorAndRespond(nil, errors.New("Forbidden"), w)
+	}
+
+	// get vars from url params
+	vars := mux.Vars(r)
+	id, _ := vars["id"]
+
+	// get the body from the request
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(r.Body)
+	b := []byte(buf.String())
+
+	js, err := model.MarkWorkoutAsCompleted(uid, id, b)
+
+	handleErrorAndRespond(js, err, w)
+}

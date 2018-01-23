@@ -56,6 +56,7 @@ func main() {
 	// Workout functions
 	api.HandleFunc("/workouts", controller.CreateWorkout).Methods("POST")
 	api.HandleFunc("/workouts/{id}", controller.GetWorkout).Methods("GET")
+	api.HandleFunc("/workouts/{id}", controller.MarkWorkoutAsCompleted).Methods("PUT")
 
 	// Exercise functions
 	api.HandleFunc("/workouts/{id}/exercises", controller.AddExerciseToWorkout).Methods("POST")

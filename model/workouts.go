@@ -112,3 +112,28 @@ func AddExerciseSet(wid string, eid string, b []byte) ([]byte, error) {
 
 	return []byte("{\"message\": \"Set added successfully.\"}"), nil
 }
+
+// MarkWorkoutAsCompleted updates workout given supplied body b
+func MarkWorkoutAsCompleted(uid string, id string, b []byte) ([]byte, error) {
+	var workout workoutModel
+	var workoutUpdate updateWorkoutModel
+
+	db.First(&workout, "id = ?", id)
+	if workout.User != uid {
+		return nil, errors.New("Forbidden")
+	}
+
+	err := json.Unmarshal(b, &workoutUpdate)
+
+	if err != nil {
+		return nil, err
+	}
+
+	db.Model(&workout).Update("completed", workoutUpdate.Completed)
+	db.Model(&workout).Update("rating", workoutUpdate.Rating)
+	db.Model(&workout).Update("comments", workoutUpdate.Comments)
+
+	js, err := json.Marshal(workout)
+
+	return js, err
+}
