@@ -18,7 +18,9 @@ func CreateWorkout(uid string, b []byte) ([]byte, error) {
 
 	db.Save(&workout)
 
-	return []byte("{\"message\": \"Workout created successfully.\"}"), nil
+	js, err := json.Marshal(&workout)
+
+	return js, err
 }
 
 // AddExerciseToWorkout takes a wid which is existing workout and adds a new exercise to it.
