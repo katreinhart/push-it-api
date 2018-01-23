@@ -97,6 +97,10 @@ type (
 		GoalWeight int       `json:"goal_weight"`
 	}
 
+	goalsResponse struct {
+		Data []transformedGoal `json:"data"`
+	}
+
 	updatePrimaryGoal struct {
 		Goal string `json:"goal"`
 	}

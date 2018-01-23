@@ -13,6 +13,7 @@ import (
 func GetSecondaryGoals(uid string) ([]byte, error) {
 	var goals []secondaryGoal
 	var _goals []transformedGoal
+	var _goalResponse goalsResponse
 
 	db.Find(&goals, "user_id = ?", uid)
 
@@ -26,7 +27,9 @@ func GetSecondaryGoals(uid string) ([]byte, error) {
 		_goals = append(_goals, transformedGoal{GoalID: id, UserID: item.UserID, GoalDate: item.GoalDate, GoalWeight: item.GoalWeight, Exercise: item.Exercise})
 	}
 
-	js, err := json.Marshal(_goals)
+	_goalResponse = goalsResponse{Data: _goals}
+
+	js, err := json.Marshal(_goalResponse)
 
 	return js, err
 }
