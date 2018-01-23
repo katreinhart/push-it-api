@@ -52,3 +52,20 @@ func AddExerciseToWorkout(w http.ResponseWriter, r *http.Request) {
 
 	handleErrorAndRespond(js, err, w)
 }
+
+// AddExerciseSet adds a set to the exercise
+func AddExerciseSet(w http.ResponseWriter, r *http.Request) {
+	// get workout ID and exercise ID from vars
+	vars := mux.Vars(r)
+	id, _ := vars["id"]
+	eid, _ := vars["eid"]
+
+	// get the body from the request
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(r.Body)
+	b := []byte(buf.String())
+
+	js, err := model.AddExerciseSet(id, eid, b)
+
+	handleErrorAndRespond(js, err, w)
+}

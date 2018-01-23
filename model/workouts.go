@@ -59,3 +59,25 @@ func GetWorkout(wid string) ([]byte, error) {
 
 	return json.Marshal(workout)
 }
+
+// AddExerciseSet adds a set of the given exercise to the workout in question.
+func AddExerciseSet(wid string, eid string, b []byte) ([]byte, error) {
+
+	var newSet workoutSetAsPosted
+	var newExSet workoutExerciseSet
+
+	err := json.Unmarshal(b, &newSet)
+
+	if err != nil {
+		return nil, err
+	}
+
+	newExSet.WorkoutExerciseID = eid
+	newExSet.Weight = newSet.Weight
+	newExSet.RepsAttempted = newSet.RepsAttempted
+	newExSet.RepsCompleted = newSet.RepsCompleted
+
+	db.Save(&newExSet)
+
+	return []byte("{\"message\": \"Set added successfully.\"}"), nil
+}

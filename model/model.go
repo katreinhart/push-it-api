@@ -70,13 +70,19 @@ type (
 		GoalRepsPerSet int    `json:"goal_reps"`
 	}
 
-	// workoutExerciseSet struct {
-	// 	gorm.Model
-	// 	WorkoutExerciseID uint `json:"workout_exercise_id"`
-	// 	Weight            uint `json:"weight"`
-	// 	RepsAttempted     uint `json:"reps_att"`
-	// 	RepsCompleted     uint `json:"reps_comp"`
-	// }
+	workoutExerciseSet struct {
+		gorm.Model
+		WorkoutExerciseID string `json:"workout_exercise_id"`
+		Weight            int    `json:"weight"`
+		RepsAttempted     int    `json:"reps_att"`
+		RepsCompleted     int    `json:"reps_comp"`
+	}
+
+	workoutSetAsPosted struct {
+		Weight        int `json:"weight"`
+		RepsAttempted int `json:"reps_att"`
+		RepsCompleted int `json:"reps_comp"`
+	}
 
 	postedGoals struct {
 		Goal1 postedBasicGoal `json:"goal1"`
@@ -148,4 +154,5 @@ func init() {
 	db.AutoMigrate(&secondaryGoal{})
 	db.AutoMigrate(&workoutModel{})
 	db.AutoMigrate(&workoutExercise{})
+	db.AutoMigrate(&workoutExerciseSet{})
 }

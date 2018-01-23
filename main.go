@@ -61,6 +61,8 @@ func main() {
 	api.HandleFunc("/workouts/{id}/exercises", controller.AddExerciseToWorkout).Methods("POST")
 	// api.HandleFunc("/workouts/{id}/exercises", controller.GetExercisesForWorkout).Methods("GET")
 
+	api.HandleFunc("/workouts/{id}/exercises/{eid}/sets", controller.AddExerciseSet).Methods("POST")
+
 	// JWT Middleware handles authorization configuration
 	jwtMiddleware := jwtmiddleware.New(jwtmiddleware.Options{
 		ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
