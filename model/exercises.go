@@ -62,3 +62,14 @@ func CreateExercise(b []byte) ([]byte, error) {
 	// Return a success message (maybe edit later to return the exercise?)
 	return []byte("{\"message\": \"Exercise successfully added\"}"), nil
 }
+
+func getExerciseID(exerciseName string) (uint, error) {
+	var exercise exercise
+
+	db.Find(&exercise, "name = ?", exerciseName)
+	if exercise.ID == 0 {
+		return 0, errors.New("Not found")
+	}
+
+	return exercise.ID, nil
+}

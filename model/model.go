@@ -35,12 +35,14 @@ type (
 		Token string `json:"token"`
 	}
 
-	// workout struct {
-	// 	gorm.Model
-	// 	User  uint      `json:"uid"`
-	// 	Start time.Time `json:"start_time"`
-	// 	End   time.Time `json:"finish_time"`
-	// }
+	workoutModel struct {
+		gorm.Model
+		User     string    `json:"uid"`
+		Start    time.Time `json:"start_time"`
+		End      time.Time `json:"finish_time"`
+		Rating   int       `json:"rating"`
+		Comments string    `json:"comments"`
+	}
 
 	exercise struct {
 		gorm.Model
@@ -54,11 +56,19 @@ type (
 		Link string `json:"info_url"`
 	}
 
-	// workoutExercise struct {
-	// 	gorm.Model
-	// 	WorkoutID  uint `json:"workout_id"`
-	// 	ExerciseID uint `json:"exercise_id"`
-	// }
+	workoutExercise struct {
+		gorm.Model
+		WorkoutID      string `json:"workout_id"`
+		ExerciseID     uint   `json:"exercise_id"`
+		GoalSets       int    `json:"goal_sets"`
+		GoalRepsPerSet int    `json:"goal_reps_per_set"`
+	}
+
+	workoutExerciseAsPosted struct {
+		ExerciseName   string `json:"exercise_name"`
+		GoalSets       int    `json:"goal_sets"`
+		GoalRepsPerSet int    `json:"goal_reps"`
+	}
 
 	// workoutExerciseSet struct {
 	// 	gorm.Model
@@ -136,4 +146,6 @@ func init() {
 	db.AutoMigrate(&userModel{})
 	db.AutoMigrate(&exercise{})
 	db.AutoMigrate(&secondaryGoal{})
+	db.AutoMigrate(&workoutModel{})
+	db.AutoMigrate(&workoutExercise{})
 }
