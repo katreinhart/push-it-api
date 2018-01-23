@@ -63,14 +63,15 @@ func GetWorkout(wid string) ([]byte, error) {
 		var dbSets []workoutExerciseSet
 
 		var _exercises []transformedWorkoutExercise
-		var _sets []workoutSetAsPosted
+		var _sets []transformedWorkoutSet
 
 		db.Find(&dbExercises, "workout_id = ?", wid)
 
 		for _, ex := range dbExercises {
 			db.Find(&dbSets, "workout_exercise_id = ?", ex.ID)
 			for _, set := range dbSets {
-				_sets = append(_sets, workoutSetAsPosted{RepsAttempted: set.RepsAttempted, RepsCompleted: set.RepsCompleted})
+				name, _ := getExerciseName(ex.ID)
+				_sets = append(_sets, transformedWorkoutSet{ExerciseName: name, Weight: set.Weight, RepsAttempted: set.RepsAttempted, RepsCompleted: set.RepsCompleted})
 			}
 			exName, err := getExerciseName(ex.ExerciseID)
 			if err != nil {
@@ -78,6 +79,9 @@ func GetWorkout(wid string) ([]byte, error) {
 			}
 			_exercises = append(_exercises, transformedWorkoutExercise{WorkoutID: ex.WorkoutID, ExerciseID: ex.ExerciseID, ExerciseName: exName, GoalSets: ex.GoalSets, GoalRepsPerSet: ex.GoalRepsPerSet})
 		}
+
+		completed.Sets = _sets
+		completed.Exercises = _exercises
 
 		js, err := json.Marshal(completed)
 

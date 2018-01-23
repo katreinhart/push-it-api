@@ -52,7 +52,7 @@ type (
 		Rating    int                          `json:"rating"`
 		Comments  string                       `json:"comments"`
 		Exercises []transformedWorkoutExercise `json:"exercises"`
-		Sets      []workoutSetAsPosted         `json:"sets"`
+		Sets      []transformedWorkoutSet      `json:"sets"`
 	}
 
 	exercise struct {
@@ -101,6 +101,13 @@ type (
 		Weight        int `json:"weight"`
 		RepsAttempted int `json:"reps_att"`
 		RepsCompleted int `json:"reps_comp"`
+	}
+
+	transformedWorkoutSet struct {
+		ExerciseName  string `json:"exercise"`
+		Weight        int    `json:"weight"`
+		RepsAttempted int    `json:"reps_att"`
+		RepsCompleted int    `json:"reps_comp"`
 	}
 
 	postedGoals struct {
