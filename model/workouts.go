@@ -50,11 +50,38 @@ func AddExerciseToWorkout(wid string, b []byte) ([]byte, error) {
 // GetWorkout returns the given workout based on workout ID (wid)
 func GetWorkout(wid string) ([]byte, error) {
 	var workout workoutModel
+	var completed completedWorkout
 
 	db.First(&workout, "id = ?", wid)
 
 	if workout.ID == 0 {
 		return nil, errors.New("Not found")
+	}
+
+	if workout.Completed {
+		var dbExercises []workoutExercise
+		var dbSets []workoutExerciseSet
+
+		var _exercises []transformedWorkoutExercise
+		var _sets []workoutSetAsPosted
+
+		db.Find(&dbExercises, "workout_id = ?", wid)
+
+		for _, ex := range dbExercises {
+			db.Find(&dbSets, "workout_exercise_id = ?", ex.ID)
+			for _, set := range dbSets {
+				_sets = append(_sets, workoutSetAsPosted{RepsAttempted: set.RepsAttempted, RepsCompleted: set.RepsCompleted})
+			}
+			exName, err := getExerciseName(ex.ExerciseID)
+			if err != nil {
+				panic("exercise not found")
+			}
+			_exercises = append(_exercises, transformedWorkoutExercise{WorkoutID: ex.WorkoutID, ExerciseID: ex.ExerciseID, ExerciseName: exName, GoalSets: ex.GoalSets, GoalRepsPerSet: ex.GoalRepsPerSet})
+		}
+
+		js, err := json.Marshal(completed)
+
+		return js, err
 	}
 
 	return json.Marshal(workout)

@@ -73,3 +73,14 @@ func getExerciseID(exerciseName string) (uint, error) {
 
 	return exercise.ID, nil
 }
+
+func getExerciseName(eid uint) (string, error) {
+	var exercise exercise
+	db.Find(&exercise, "id = ?", eid)
+
+	if exercise.ID == 0 {
+		return "", errors.New("Not found")
+	}
+
+	return exercise.Name, nil
+}

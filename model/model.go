@@ -37,11 +37,22 @@ type (
 
 	workoutModel struct {
 		gorm.Model
-		User     string    `json:"uid"`
-		Start    time.Time `json:"start_time"`
-		End      time.Time `json:"finish_time"`
-		Rating   int       `json:"rating"`
-		Comments string    `json:"comments"`
+		User      string    `json:"uid"`
+		Start     time.Time `json:"start_time"`
+		End       time.Time `json:"finish_time"`
+		Rating    int       `json:"rating"`
+		Comments  string    `json:"comments"`
+		Completed bool      `json:"completed"`
+	}
+
+	completedWorkout struct {
+		User      string                       `json:"uid"`
+		Start     time.Time                    `json:"start_time"`
+		End       time.Time                    `json:"finish_time"`
+		Rating    int                          `json:"rating"`
+		Comments  string                       `json:"comments"`
+		Exercises []transformedWorkoutExercise `json:"exercises"`
+		Sets      []workoutSetAsPosted         `json:"sets"`
 	}
 
 	exercise struct {
@@ -60,6 +71,14 @@ type (
 		gorm.Model
 		WorkoutID      string `json:"workout_id"`
 		ExerciseID     uint   `json:"exercise_id"`
+		GoalSets       int    `json:"goal_sets"`
+		GoalRepsPerSet int    `json:"goal_reps_per_set"`
+	}
+
+	transformedWorkoutExercise struct {
+		WorkoutID      string `json:"workout_id"`
+		ExerciseID     uint   `json:"exercise_id"`
+		ExerciseName   string `json:"exercise_name"`
 		GoalSets       int    `json:"goal_sets"`
 		GoalRepsPerSet int    `json:"goal_reps_per_set"`
 	}
