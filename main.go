@@ -66,6 +66,8 @@ func main() {
 	// Weight plate function
 	api.HandleFunc("/weightplates/{weight}", controller.FindWeightPlates).Methods("GET")
 
+	api.HandleFunc("/history", controller.History).Methods("GET")
+
 	// JWT Middleware handles authorization configuration
 	jwtMiddleware := jwtmiddleware.New(jwtmiddleware.Options{
 		ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
