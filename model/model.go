@@ -154,6 +154,15 @@ type (
 		Goal string `json:"goal"`
 	}
 
+	WeightPlate struct {
+		Plate45 int `json:"45"`
+		Plate35 int `json:"35"`
+		Plate25 int `json:"25"`
+		Plate10 int `json:"10"`
+		Plate05 int `json:"05"`
+		Plate02 int `json:"025"`
+	}
+
 	// CustomClaims for JWT handling
 	CustomClaims struct {
 		UID uint `json:"uid"`
