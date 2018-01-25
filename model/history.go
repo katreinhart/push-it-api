@@ -16,10 +16,8 @@ func History(uid string) ([]byte, error) {
 	var sets []workoutExerciseSet
 
 	// find all workouts in db with user uid
-	intID, _ := strconv.Atoi(uid)
-	uintID := uint(intID)
-	fmt.Println(uintID)
-	db.Find(&workouts, "user = ?", uid)
+	fmt.Println("user id is ", uid)
+	db.Find(&workouts, "user_id = ?", uid)
 	if len(workouts) == 0 {
 		fmt.Println("no workouts found?? ")
 		return nil, errors.New("Not found")
