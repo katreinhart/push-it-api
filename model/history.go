@@ -3,7 +3,6 @@ package model
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"strconv"
 )
 
@@ -16,10 +15,8 @@ func History(uid string) ([]byte, error) {
 	var sets []workoutExerciseSet
 
 	// find all workouts in db with user uid
-	fmt.Println("user id is ", uid)
 	db.Find(&workouts, "user_id = ?", uid)
 	if len(workouts) == 0 {
-		fmt.Println("no workouts found?? ")
 		return nil, errors.New("Not found")
 	}
 
@@ -27,18 +24,13 @@ func History(uid string) ([]byte, error) {
 	for _, wko := range workouts {
 		var _exercises []transformedWorkoutExercise
 		var _sets []transformedWorkoutSet
+
 		db.Find(&exercises, "workout_id = ?", wko.ID)
-		if len(exercises) == 0 {
-			continue
-		}
 		for _, ex := range exercises {
 			var strID = strconv.Itoa(int(wko.ID))
-			var exerciseName, _ = getExerciseName(wko.ID)
+			var exerciseName, _ = getExerciseName(ex.ExerciseID)
 
 			db.Find(&sets, "workout_exercise_id = ?", strID)
-			if len(sets) == 0 {
-				continue
-			}
 			for _, set := range sets {
 				_sets = append(_sets, transformedWorkoutSet{ExerciseName: exerciseName, Weight: set.Weight, RepsAttempted: set.RepsAttempted, RepsCompleted: set.RepsCompleted})
 			}

@@ -3,6 +3,7 @@ package model
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 )
 
 // CreateWorkout instantiates a new workout object with data from request body
@@ -33,8 +34,10 @@ func AddExerciseToWorkout(wid string, b []byte) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println("asdf")
 
 	exerciseID, err := getExerciseID(exercisePosted.ExerciseName)
+	fmt.Println(exerciseID)
 	if err != nil {
 		return nil, err
 	}

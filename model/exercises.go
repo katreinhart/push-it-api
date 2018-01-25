@@ -64,14 +64,14 @@ func CreateExercise(b []byte) ([]byte, error) {
 }
 
 func getExerciseID(exerciseName string) (uint, error) {
-	var exercise exercise
+	var dbExercise exercise
 
-	db.Find(&exercise, "name = ?", exerciseName)
-	if exercise.ID == 0 {
+	db.Find(&dbExercise, "name = ?", exerciseName)
+	if dbExercise.ID == 0 {
 		return 0, errors.New("Not found")
 	}
 
-	return exercise.ID, nil
+	return dbExercise.ID, nil
 }
 
 func getExerciseName(eid uint) (string, error) {
