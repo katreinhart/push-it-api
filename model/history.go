@@ -36,7 +36,8 @@ func History(uid string) ([]byte, error) {
 			}
 			_exercises = append(_exercises, transformedWorkoutExercise{WorkoutID: strID, ExerciseID: ex.ID, ExerciseName: exerciseName, GoalSets: ex.GoalRepsPerSet, GoalRepsPerSet: ex.GoalRepsPerSet})
 		}
-		_workouts = append(_workouts, completedWorkout{User: uid, Start: wko.Start, End: wko.End, Rating: wko.Rating, Comments: wko.Comments, Exercises: _exercises, Sets: _sets})
+		workoutID := strconv.Itoa(int(wko.ID))
+		_workouts = append(_workouts, completedWorkout{User: uid, WorkoutID: workoutID, Start: wko.Start, End: wko.End, Rating: wko.Rating, Comments: wko.Comments, Exercises: _exercises, Sets: _sets})
 	}
 
 	js, err := json.Marshal(_workouts)

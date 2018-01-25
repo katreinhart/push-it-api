@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strconv"
 )
 
 // CreateWorkout instantiates a new workout object with data from request body
@@ -85,6 +86,8 @@ func GetWorkout(wid string) ([]byte, error) {
 			_exercises = append(_exercises, transformedWorkoutExercise{WorkoutID: ex.WorkoutID, ExerciseID: ex.ExerciseID, ExerciseName: exName, GoalSets: ex.GoalSets, GoalRepsPerSet: ex.GoalRepsPerSet})
 		}
 
+		workoutID := strconv.Itoa(int(workout.ID))
+		completed.WorkoutID = workoutID
 		completed.Sets = _sets
 		completed.Exercises = _exercises
 

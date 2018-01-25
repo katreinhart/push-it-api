@@ -54,6 +54,7 @@ type (
 
 	completedWorkout struct {
 		User      string                       `json:"uid"`
+		WorkoutID string                       `json:"workout_id"`
 		Start     time.Time                    `json:"start_time"`
 		End       time.Time                    `json:"finish_time"`
 		Rating    int                          `json:"rating"`
