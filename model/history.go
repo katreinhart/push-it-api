@@ -9,8 +9,6 @@ import (
 
 // History retrieves all of the given user's completed workouts and returns nested objects
 func History(uid string) ([]byte, error) {
-	fmt.Println("In the history function")
-
 	var workouts []workoutModel
 	var _workouts []completedWorkout
 
@@ -18,9 +16,12 @@ func History(uid string) ([]byte, error) {
 	var sets []workoutExerciseSet
 
 	// find all workouts in db with user uid
+	intID, _ := strconv.Atoi(uid)
+	uintID := uint(intID)
+	fmt.Println(uintID)
 	db.Find(&workouts, "user = ?", uid)
 	if len(workouts) == 0 {
-		fmt.Println("No workouts found")
+		fmt.Println("no workouts found?? ")
 		return nil, errors.New("Not found")
 	}
 
@@ -29,11 +30,17 @@ func History(uid string) ([]byte, error) {
 		var _exercises []transformedWorkoutExercise
 		var _sets []transformedWorkoutSet
 		db.Find(&exercises, "workout_id = ?", wko.ID)
+		if len(exercises) == 0 {
+			continue
+		}
 		for _, ex := range exercises {
 			var strID = strconv.Itoa(int(wko.ID))
 			var exerciseName, _ = getExerciseName(wko.ID)
 
 			db.Find(&sets, "workout_exercise_id = ?", strID)
+			if len(sets) == 0 {
+				continue
+			}
 			for _, set := range sets {
 				_sets = append(_sets, transformedWorkoutSet{ExerciseName: exerciseName, Weight: set.Weight, RepsAttempted: set.RepsAttempted, RepsCompleted: set.RepsCompleted})
 			}

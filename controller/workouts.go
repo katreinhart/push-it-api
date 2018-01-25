@@ -3,6 +3,7 @@ package controller
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -12,6 +13,7 @@ import (
 // CreateWorkout instantiates a new workout object with data from request body
 func CreateWorkout(w http.ResponseWriter, r *http.Request) {
 	uid, err := GetUIDFromBearerToken(r)
+	fmt.Println("UID", uid)
 	if err != nil {
 		handleErrorAndRespond(nil, errors.New("Forbidden"), w)
 	}

@@ -37,7 +37,7 @@ type (
 
 	workoutModel struct {
 		gorm.Model
-		User      string    `json:"uid"`
+		UserID    string    `json:"user_id"`
 		Start     time.Time `json:"start_time"`
 		End       time.Time `json:"finish_time"`
 		Rating    int       `json:"rating"`

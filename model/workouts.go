@@ -14,7 +14,7 @@ func CreateWorkout(uid string, b []byte) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	workout.User = uid
+	workout.UserID = uid
 
 	db.Save(&workout)
 
@@ -121,7 +121,7 @@ func MarkWorkoutAsCompleted(uid string, id string, b []byte) ([]byte, error) {
 	var workoutUpdate updateWorkoutModel
 
 	db.First(&workout, "id = ?", id)
-	if workout.User != uid {
+	if workout.UserID != uid {
 		return nil, errors.New("Forbidden")
 	}
 
