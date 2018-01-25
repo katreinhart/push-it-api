@@ -50,7 +50,8 @@ func AddExerciseToWorkout(wid string, b []byte) ([]byte, error) {
 
 	db.Save(&exercise)
 
-	return []byte("{\"message\": \"Exercise added successfully.\"}"), nil
+	js, err := json.Marshal(&exercise)
+	return js, err
 }
 
 // GetWorkout returns the given workout based on workout ID (wid)
@@ -112,13 +113,16 @@ func AddExerciseSet(wid string, eid string, b []byte) ([]byte, error) {
 	}
 
 	newExSet.WorkoutExerciseID = eid
+	newExSet.WorkoutID = wid
+	newExSet.ExerciseName = newSet.Exercise
 	newExSet.Weight = newSet.Weight
 	newExSet.RepsAttempted = newSet.RepsAttempted
 	newExSet.RepsCompleted = newSet.RepsCompleted
 
 	db.Save(&newExSet)
 
-	return []byte("{\"message\": \"Set added successfully.\"}"), nil
+	js, err := json.Marshal(newExSet)
+	return js, err
 }
 
 // MarkWorkoutAsCompleted updates workout given supplied body b

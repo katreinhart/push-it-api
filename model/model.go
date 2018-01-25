@@ -100,15 +100,18 @@ type (
 	workoutExerciseSet struct {
 		gorm.Model
 		WorkoutExerciseID string `json:"workout_exercise_id"`
+		WorkoutID         string `json:"workout_id"`
+		ExerciseName      string `json:"exercise_name"`
 		Weight            int    `json:"weight"`
 		RepsAttempted     int    `json:"reps_att"`
 		RepsCompleted     int    `json:"reps_comp"`
 	}
 
 	workoutSetAsPosted struct {
-		Weight        int `json:"weight"`
-		RepsAttempted int `json:"reps_att"`
-		RepsCompleted int `json:"reps_comp"`
+		Weight        int    `json:"weight"`
+		Exercise      string `json:"exercise_name"`
+		RepsAttempted int    `json:"reps_att"`
+		RepsCompleted int    `json:"reps_comp"`
 	}
 
 	transformedWorkoutSet struct {
