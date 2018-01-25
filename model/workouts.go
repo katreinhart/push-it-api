@@ -148,3 +148,26 @@ func MarkWorkoutAsCompleted(uid string, id string, b []byte) ([]byte, error) {
 
 	return js, err
 }
+
+// UpdateWorkoutTimestamps updates database entry for given workout with started and completed timestamps
+func UpdateWorkoutTimestamps(id string, b []byte) ([]byte, error) {
+	var timestamps postedTimestamps
+	var workout workoutModel
+
+	err := json.Unmarshal(b, &timestamps)
+	if err != nil {
+		return nil, err
+	}
+
+	db.First(&workout, "id = ?", id)
+	if workout.ID == 0 {
+		return nil, errors.New("Not found")
+	}
+
+	db.Model(&workout).Update("start", timestamps.StartedAt)
+	db.Model(&workout).Update("end", timestamps.FinishedAt)
+
+	js, err := json.Marshal(workout)
+
+	return js, err
+}

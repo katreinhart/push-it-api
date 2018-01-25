@@ -121,6 +121,11 @@ type (
 		RepsCompleted int    `json:"reps_comp"`
 	}
 
+	postedTimestamps struct {
+		StartedAt  time.Time `json:"started_at"`
+		FinishedAt time.Time `json:"finished_at"`
+	}
+
 	postedGoals struct {
 		Goal1 postedBasicGoal `json:"goal1"`
 		Goal2 postedBasicGoal `json:"goal2"`

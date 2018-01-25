@@ -93,3 +93,19 @@ func MarkWorkoutAsCompleted(w http.ResponseWriter, r *http.Request) {
 
 	handleErrorAndRespond(js, err, w)
 }
+
+// UpdateWorkoutTimestamps
+func UpdateWorkoutTimestamps(w http.ResponseWriter, r *http.Request) {
+	// get workout ID from url params
+	vars := mux.Vars(r)
+	id, _ := vars["id"]
+
+	// parse body from request
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(r.Body)
+	b := []byte(buf.String())
+
+	js, err := model.UpdateWorkoutTimestamps(id, b)
+
+	handleErrorAndRespond(js, err, w)
+}
