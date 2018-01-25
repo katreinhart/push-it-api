@@ -3,11 +3,14 @@ package model
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"strconv"
 )
 
 // History retrieves all of the given user's completed workouts and returns nested objects
 func History(uid string) ([]byte, error) {
+	fmt.Println("In the history function")
+
 	var workouts []workoutModel
 	var _workouts []completedWorkout
 
@@ -17,6 +20,7 @@ func History(uid string) ([]byte, error) {
 	// find all workouts in db with user uid
 	db.Find(&workouts, "user = ?", uid)
 	if len(workouts) == 0 {
+		fmt.Println("No workouts found")
 		return nil, errors.New("Not found")
 	}
 
