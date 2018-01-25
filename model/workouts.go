@@ -101,7 +101,7 @@ func GetWorkout(wid string) ([]byte, error) {
 }
 
 // AddExerciseSet adds a set of the given exercise to the workout in question.
-func AddExerciseSet(wid string, eid string, b []byte) ([]byte, error) {
+func AddExerciseSet(wid string, b []byte) ([]byte, error) {
 
 	var newSet workoutSetAsPosted
 	var newExSet workoutExerciseSet
@@ -112,7 +112,6 @@ func AddExerciseSet(wid string, eid string, b []byte) ([]byte, error) {
 		return nil, err
 	}
 
-	newExSet.WorkoutExerciseID = eid
 	newExSet.WorkoutID = wid
 	newExSet.ExerciseName = newSet.Exercise
 	newExSet.Weight = newSet.Weight
