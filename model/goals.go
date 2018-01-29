@@ -69,17 +69,14 @@ func PostSecondaryGoals(uid string, b []byte) ([]byte, error) {
 	if len(goals) > 0 {
 		// overwrite existing goals
 		fmt.Println("overwriting existing goals")
-		goals[0] = secondaryGoal{UserID: uid, GoalDate: date1, GoalWeight: weight1, Exercise: postGoals.Goal1.Exercise}
-		goals[1] = secondaryGoal{UserID: uid, GoalDate: date2, GoalWeight: weight2, Exercise: postGoals.Goal2.Exercise}
-		db.Save(&goals)
-		fmt.Println("successfully overwrote goals")
-	} else {
-		// create new goals
-		goal1 = secondaryGoal{UserID: uid, GoalDate: date1, GoalWeight: weight1, Exercise: postGoals.Goal1.Exercise}
-		goal2 = secondaryGoal{UserID: uid, GoalDate: date2, GoalWeight: weight2, Exercise: postGoals.Goal2.Exercise}
-		db.Save(&goal1)
-		db.Save(&goal2)
+		db.Delete(&goal1)
+		db.Delete(&goal2)
 	}
+	// create new goals
+	goal1 = secondaryGoal{UserID: uid, GoalDate: date1, GoalWeight: weight1, Exercise: postGoals.Goal1.Exercise}
+	goal2 = secondaryGoal{UserID: uid, GoalDate: date2, GoalWeight: weight2, Exercise: postGoals.Goal2.Exercise}
+	db.Save(&goal1)
+	db.Save(&goal2)
 
 	fmt.Println("DB saved")
 
