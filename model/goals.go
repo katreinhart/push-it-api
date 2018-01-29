@@ -54,6 +54,7 @@ func PostSecondaryGoals(uid string, b []byte) ([]byte, error) {
 	// Calculate the dates
 	date1, err := time.Parse("2006-01-02T15:04:05Z07:00", postGoals.Goal1.GoalDate)
 	date2, err := time.Parse("2006-01-02T15:04:05Z07:00", postGoals.Goal2.GoalDate)
+
 	fmt.Println(postGoals.Goal1.GoalDate)
 	fmt.Println(postGoals.Goal2.GoalDate)
 	fmt.Println(date1, "\n", date2)
@@ -80,6 +81,7 @@ func PostSecondaryGoals(uid string, b []byte) ([]byte, error) {
 	db.Save(&goal2)
 
 	fmt.Println("DB saved")
+	fmt.Println(goal1, goal2)
 
 	// Return a success message (maybe edit later to return the question?)
 	return []byte("{\"message\": \"Goals successfully added\"}"), nil
