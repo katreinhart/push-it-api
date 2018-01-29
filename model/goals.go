@@ -60,6 +60,7 @@ func PostSecondaryGoals(uid string, b []byte) ([]byte, error) {
 	weight2, err := strconv.Atoi(postGoals.Goal2.GoalWeight)
 
 	if err != nil {
+		fmt.Println("Something went wrong parsing data")
 		return nil, errors.New("Something went wrong")
 	}
 
