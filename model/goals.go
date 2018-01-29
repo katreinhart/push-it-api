@@ -63,8 +63,8 @@ func PostSecondaryGoals(uid string, b []byte) ([]byte, error) {
 	}
 
 	// Transform data to db format
-	goal1 = secondaryGoal{UserID: postGoals.Goal1.UserID, GoalDate: date1, GoalWeight: weight1, Exercise: postGoals.Goal1.Exercise}
-	goal2 = secondaryGoal{UserID: postGoals.Goal2.UserID, GoalDate: date2, GoalWeight: weight2, Exercise: postGoals.Goal2.Exercise}
+	goal1 = secondaryGoal{UserID: uid, GoalDate: date1, GoalWeight: weight1, Exercise: postGoals.Goal1.Exercise}
+	goal2 = secondaryGoal{UserID: uid, GoalDate: date2, GoalWeight: weight2, Exercise: postGoals.Goal2.Exercise}
 
 	// Handle error if any
 	if err != nil {
