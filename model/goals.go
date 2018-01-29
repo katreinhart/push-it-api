@@ -56,6 +56,7 @@ func PostSecondaryGoals(uid string, b []byte) ([]byte, error) {
 	date2, err := time.Parse("2018-04-29 20:46:09 +0000", postGoals.Goal2.GoalDate)
 
 	fmt.Println(date1, "\n", date2)
+
 	weight1, err := strconv.Atoi(postGoals.Goal1.GoalWeight)
 	weight2, err := strconv.Atoi(postGoals.Goal2.GoalWeight)
 
@@ -67,9 +68,11 @@ func PostSecondaryGoals(uid string, b []byte) ([]byte, error) {
 	db.Find(&goals, "user_id = ?", uid)
 	if len(goals) > 0 {
 		// overwrite existing goals
+		fmt.Println("overwriting existing goals")
 		goals[0] = secondaryGoal{UserID: uid, GoalDate: date1, GoalWeight: weight1, Exercise: postGoals.Goal1.Exercise}
 		goals[1] = secondaryGoal{UserID: uid, GoalDate: date2, GoalWeight: weight2, Exercise: postGoals.Goal2.Exercise}
 		db.Save(&goals)
+		fmt.Println("successfully overwrote goals")
 	} else {
 		// create new goals
 		goal1 = secondaryGoal{UserID: uid, GoalDate: date1, GoalWeight: weight1, Exercise: postGoals.Goal1.Exercise}
