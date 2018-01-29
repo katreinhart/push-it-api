@@ -52,8 +52,8 @@ func PostSecondaryGoals(uid string, b []byte) ([]byte, error) {
 	}
 
 	// Calculate the dates
-	date1, err := time.Parse("Apr 29, 2018", postGoals.Goal1.GoalDate)
-	date2, err := time.Parse("Apr 29, 2018", postGoals.Goal2.GoalDate)
+	date1, err := time.Parse("2006-01-02T15:04:05Z07:00", postGoals.Goal1.GoalDate)
+	date2, err := time.Parse("2006-01-02T15:04:05Z07:00", postGoals.Goal2.GoalDate)
 	fmt.Println(postGoals.Goal1.GoalDate)
 	fmt.Println(postGoals.Goal2.GoalDate)
 	fmt.Println(date1, "\n", date2)
