@@ -37,7 +37,7 @@ func GetSecondaryGoals(uid string) ([]byte, error) {
 // PostSecondaryGoals creates or updates goals in the database.
 func PostSecondaryGoals(uid string, b []byte) ([]byte, error) {
 	fmt.Println("Post secondary goals MODEL function")
-
+	var goals []secondaryGoal
 	var postGoals postedGoals
 	var goal1, goal2 secondaryGoal
 
@@ -59,21 +59,23 @@ func PostSecondaryGoals(uid string, b []byte) ([]byte, error) {
 	weight2, err := strconv.Atoi(postGoals.Goal2.GoalWeight)
 
 	if err != nil {
-		// handle date error
+		return nil, errors.New("Something went wrong")
 	}
 
-	// Transform data to db format
-	goal1 = secondaryGoal{UserID: uid, GoalDate: date1, GoalWeight: weight1, Exercise: postGoals.Goal1.Exercise}
-	goal2 = secondaryGoal{UserID: uid, GoalDate: date2, GoalWeight: weight2, Exercise: postGoals.Goal2.Exercise}
-
-	// Handle error if any
-	if err != nil {
-		fmt.Println("Somethign wrong")
-		return []byte("{\"message\": \"Something went wrong.\"}"), err
+	db.Find(&goals, "user_id = ?", uid)
+	if len(goals) > 0 {
+		// overwrite existing goals
+		goals[0] = secondaryGoal{UserID: uid, GoalDate: date1, GoalWeight: weight1, Exercise: postGoals.Goal1.Exercise}
+		goals[1] = secondaryGoal{UserID: uid, GoalDate: date2, GoalWeight: weight2, Exercise: postGoals.Goal2.Exercise}
+		db.Save(&goals)
+	} else {
+		// create new goals
+		goal1 = secondaryGoal{UserID: uid, GoalDate: date1, GoalWeight: weight1, Exercise: postGoals.Goal1.Exercise}
+		goal2 = secondaryGoal{UserID: uid, GoalDate: date2, GoalWeight: weight2, Exercise: postGoals.Goal2.Exercise}
+		db.Save(&goal1)
+		db.Save(&goal2)
 	}
 
-	db.Save(&goal1)
-	db.Save(&goal2)
 	fmt.Println("DB saved")
 
 	// Return a success message (maybe edit later to return the question?)
