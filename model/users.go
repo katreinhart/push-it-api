@@ -148,7 +148,8 @@ func checkPasswordHash(password, hash string) bool {
 func createAndSignJWT(user userModel) (string, error) {
 
 	// create the expiration time, build claim, create and sign token, and return.
-	e := time.Now().Add(time.Hour * 24).Unix()
+	// token expires in 30 days (720 hours)
+	e := time.Now().Add(time.Hour * 720).Unix()
 	c := CustomClaims{
 		user.ID,
 		jwt.StandardClaims{
