@@ -82,7 +82,7 @@ func LoginUser(b []byte) ([]byte, error) {
 	// See if password matches the hashed password from the database
 	match := checkPasswordHash(user.Password, dbUser.Password)
 	if !match {
-		return []byte("{\"message\": \"Check your inputs and try again.\"}"), errors.New("Unauthorized")
+		return nil, errors.New("Unauthorized")
 	}
 	// Create and sign JWT; handle any error
 	t, err := createAndSignJWT(dbUser)
