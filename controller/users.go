@@ -35,14 +35,21 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 	handleErrorAndRespond(js, err, w)
 }
 
+// SetUserInfo handles requests to update user info
 func SetUserInfo(w http.ResponseWriter, r *http.Request) {
 	// Read in http request body
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(r.Body)
 	b := []byte(buf.String())
 
+	// Get user ID from token
+	uid, err := GetUIDFromBearerToken(r)
+	if err != nil {
+		handleErrorAndRespond(nil, errors.New("Forbidden"), w)
+	}
+
 	// Login user in model
-	js, err := model.SetUserInfo(b)
+	js, err := model.SetUserInfo(uid, b)
 	handleErrorAndRespond(js, err, w)
 }
 

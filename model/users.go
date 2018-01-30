@@ -98,7 +98,7 @@ func LoginUser(b []byte) ([]byte, error) {
 }
 
 // SetUserInfo takes info from the onboarding screen and updates the database.
-func SetUserInfo(b []byte) ([]byte, error) {
+func SetUserInfo(uid string, b []byte) ([]byte, error) {
 
 	// Declare data types and unmarshal JSON into user struct
 	var user, dbUser userModel
@@ -114,7 +114,10 @@ func SetUserInfo(b []byte) ([]byte, error) {
 	if dbUser.ID == 0 {
 		return []byte("{\"message\": \"User not found in DB.\"}"), errors.New("Not found")
 	}
-	// Here I should get JWT and make sure user matches. This should be done in the controller.
+	// Compare to uid from JWT and make sure user matches.
+	if string(dbUser.ID) != uid {
+		return nil, errors.New("Forbidden")
+	}
 
 	// update first name, level, and goal in the database
 	dbUser.Level = user.Level
