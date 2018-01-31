@@ -15,3 +15,11 @@ func History(w http.ResponseWriter, r *http.Request) {
 
 	handleErrorAndRespond(js, err, w)
 }
+
+func FetchSavedExercises(w http.ResponseWriter, r *http.Request) {
+	uid, err := GetUIDFromBearerToken(r)
+
+	js, err := model.History(uid)
+
+	handleErrorAndRespond(js, err, w)
+}

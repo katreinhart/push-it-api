@@ -63,6 +63,12 @@ type (
 		Sets      []transformedWorkoutSet      `json:"sets"`
 	}
 
+	savedWorkout struct {
+		User      string                       `json:"uid"`
+		WorkoutID string                       `json:"workout_id"`
+		Exercises []transformedWorkoutExercise `json:"exercises"`
+	}
+
 	exercise struct {
 		gorm.Model
 		Name string `json:"ex_name"`
