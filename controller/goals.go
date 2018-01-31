@@ -41,6 +41,17 @@ func PostSecondaryGoals(w http.ResponseWriter, r *http.Request) {
 	handleErrorAndRespond(js, err, w)
 }
 
+// GetPrimaryGoal gets the user's primary goal from the database
+func GetPrimaryGoal(w http.ResponseWriter, r *http.Request) {
+	uid, err := GetUIDFromBearerToken(r)
+	if err != nil {
+		handleErrorAndRespond(nil, errors.New("Not found"), w)
+	}
+
+	js, err := model.GetPrimaryGoal(uid)
+	handleErrorAndRespond(js, err, w)
+}
+
 // SetPrimaryGoal sets the user's primary goal in the database
 func SetPrimaryGoal(w http.ResponseWriter, r *http.Request) {
 	uid, err := GetUIDFromBearerToken(r)

@@ -172,6 +172,10 @@ type (
 		Data []transformedGoal `json:"data"`
 	}
 
+	transformedPrimaryGoal struct {
+		Goal string `json:"goal"`
+	}
+
 	updatePrimaryGoal struct {
 		Goal string `json:"goal"`
 	}
