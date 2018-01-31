@@ -87,7 +87,7 @@ func PostSecondaryGoals(uid string, b []byte) ([]byte, error) {
 	return []byte("{\"message\": \"Goals successfully added\"}"), nil
 }
 
-// GetPrimaryGoal
+// GetPrimaryGoal fetches the user's primary goal from the Users db table
 func GetPrimaryGoal(uid string) ([]byte, error) {
 	var user userModel
 	db.First(&user, "id = ?", uid)
@@ -95,7 +95,7 @@ func GetPrimaryGoal(uid string) ([]byte, error) {
 		return nil, errors.New("Not found")
 	}
 
-	var _goal = transformedGoal{Goal: user.Goal}
+	var _goal = transformedPrimaryGoal{Goal: user.Goal}
 
 	js, err := json.Marshal(_goal)
 
