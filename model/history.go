@@ -47,7 +47,6 @@ func History(uid string) ([]byte, error) {
 func FetchSavedExercises(uid string) ([]byte, error) {
 	var workouts []workoutModel
 	var _workouts []savedWorkout
-
 	var exercises []workoutExercise
 
 	// find all workouts in db with user uid
@@ -59,7 +58,6 @@ func FetchSavedExercises(uid string) ([]byte, error) {
 	// find all associated exercises and sets associated with each workout
 	for _, wko := range workouts {
 		var _exercises []transformedWorkoutExercise
-		var _sets []transformedWorkoutSet
 
 		var strID = strconv.Itoa(int(wko.ID))
 		db.Find(&exercises, "workout_id = ?", wko.ID)
@@ -67,12 +65,8 @@ func FetchSavedExercises(uid string) ([]byte, error) {
 			var exerciseName, _ = getExerciseName(ex.ExerciseID)
 			_exercises = append(_exercises, transformedWorkoutExercise{WorkoutID: strID, ExerciseID: ex.ID, ExerciseName: exerciseName, GoalSets: ex.GoalRepsPerSet, GoalRepsPerSet: ex.GoalRepsPerSet})
 		}
-		db.Find(&sets, "workout_id = ?", strID)
-		for _, set := range sets {
-			_sets = append(_sets, transformedWorkoutSet{ExerciseName: set.ExerciseName, Weight: set.Weight, RepsAttempted: set.RepsAttempted, RepsCompleted: set.RepsCompleted})
-		}
 		workoutID := strconv.Itoa(int(wko.ID))
-		_workouts = append(_workouts, completedWorkout{User: uid, WorkoutID: workoutID, Start: wko.Start, End: wko.End, Rating: wko.Rating, Comments: wko.Comments, Exercises: _exercises, Sets: _sets})
+		_workouts = append(_workouts, savedWorkout{User: uid, WorkoutID: workoutID, Exercises: _exercises})
 	}
 
 	js, err := json.Marshal(_workouts)
