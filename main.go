@@ -79,7 +79,7 @@ func main() {
 		SigningMethod: jwt.SigningMethodHS256,
 	})
 
-	// muxRouter uses Negroni handles the middleware for authorization
+	// muxRouter uses Negroni & handles the middleware for authorization
 	muxRouter := http.NewServeMux()
 	muxRouter.Handle("/", r)
 	muxRouter.Handle("/api/", negroni.New(

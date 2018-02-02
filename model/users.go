@@ -1,8 +1,6 @@
 package model
 
 import (
-	"encoding/json"
-	"errors"
 	"fmt"
 	"os"
 	"time"
@@ -12,126 +10,104 @@ import (
 )
 
 // CreateUser creates a new user instance in the database
-func CreateUser(b []byte) ([]byte, error) {
+func CreateUser(u UserModel) (TransformedUser, error) {
 
 	// declare data structures to be used
-	var user, dbUser userModel
-
-	// Unmarshal the json body into the user data structure
-	err := json.Unmarshal(b, &user)
-
-	// handle error if any
-	if err != nil {
-		return []byte("{\"message\": \"Something went wrong.\"}"), err
-	}
+	var dbUser UserModel
 
 	// See if the user exists in the database. If so, return an error (no duplicates allowed)
-	db.First(&dbUser, "email = ?", user.Email)
+	db.First(&dbUser, "email = ?", u.Email)
 	if dbUser.ID != 0 {
-		return []byte("{\"message\": \"User already exists in DB.\"}"), errors.New("User already exists")
+		return TransformedUser{}, ErrorUserExists
 	}
 
 	// Hash the user's password using bcrypt helper function and handle any error
-	hash, err := hashPassword(user.Password)
+	hash, err := hashPassword(u.Password)
 	if err != nil {
-		return []byte("{\"message\": \"Sorry, something went wrong.\"}"), err
+		return TransformedUser{}, ErrorInternalServer
 	}
 
 	// Overwrite the user's password with the hashed version (no plaintext storage of passwords)
-	user.Password = hash
+	u.Password = hash
 
 	// save the user in the DB
-	db.Save(&user)
+	db.Save(&u)
 
 	// Get the user back from the database so you have the correct ID
-	db.First(&dbUser, "email = ?", user.Email)
+	db.First(&dbUser, "email = ?", u.Email)
 
 	// create and sign the JWT
 	t, err := createAndSignJWT(dbUser)
 
 	// Handle error in JWT creation/signing
 	if err != nil {
-		fmt.Println(err.Error())
-		return []byte("{\"message\": \"Sorry, something went wrong.\"}"), err
+		return TransformedUser{}, ErrorInternalServer
 	}
 
 	// create transformed version of user structure, marshal it into JSON and return
-	_user := transformedUser{ID: user.ID, Email: user.Email, Goal: user.Goal, Level: user.Level, Token: t}
-	js, err := json.Marshal(_user)
-	return js, err
+	_user := TransformedUser{ID: dbUser.ID, Email: u.Email, Goal: u.Goal, Level: u.Level, Token: t}
+	return _user, nil
 }
 
 // LoginUser takes info from controller and returns a token if user is who they claim to be
-func LoginUser(b []byte) ([]byte, error) {
+func LoginUser(u UserModel) (TransformedUser, error) {
 
 	// Declare data types and unmarshal JSON into user struct
-	var user, dbUser userModel
-	err := json.Unmarshal(b, &user)
+	var dbUser UserModel
 
-	if err != nil {
-		return []byte("{\"message\": \"Something went wrong.\"}"), err
-	}
-
-	db.First(&dbUser, "email = ?", user.Email)
+	db.First(&dbUser, "email = ?", u.Email)
 
 	// handle user not found error
 	if dbUser.ID == 0 {
-		return []byte("{\"message\": \"User not found in DB.\"}"), errors.New("Not found")
+		return TransformedUser{}, ErrorNotFound
 	}
 
 	// See if password matches the hashed password from the database
-	match := checkPasswordHash(user.Password, dbUser.Password)
+	match := checkPasswordHash(u.Password, dbUser.Password)
 	if !match {
-		return nil, errors.New("Unauthorized")
+		return TransformedUser{}, ErrorForbidden
 	}
 	// Create and sign JWT; handle any error
 	t, err := createAndSignJWT(dbUser)
 	if err != nil {
-		return []byte("{\"message\": \"Something went wrong with JWT.\"}"), err
+		return TransformedUser{}, ErrorInternalServer
 	}
 	// create transmission friendly user struct
-	_user := transformedUser{ID: dbUser.ID, Email: dbUser.Email, Name: dbUser.Name, Goal: dbUser.Goal, Level: dbUser.Level, Token: t}
+	_user := TransformedUser{ID: dbUser.ID, Email: dbUser.Email, Name: dbUser.Name, Goal: dbUser.Goal, Level: dbUser.Level, Token: t}
 
-	// marshal user into JSON and return
-	js, err := json.Marshal(_user)
-	return js, err
+	return _user, nil
 }
 
 // SetUserInfo takes info from the onboarding screen and updates the database.
-func SetUserInfo(uid string, b []byte) ([]byte, error) {
+func SetUserInfo(uid uint, u UserModel) (TransformedUser, error) {
 
 	// Declare data types and unmarshal JSON into user struct
-	var user, dbUser userModel
-	err := json.Unmarshal(b, &user)
+	var dbUser UserModel
 
-	if err != nil {
-		return []byte("{\"message\": \"Something went wrong.\"}"), err
-	}
-
-	db.First(&dbUser, "email = ?", user.Email)
+	db.First(&dbUser, "email = ?", u.Email)
 
 	// handle user not found error
 	if dbUser.ID == 0 {
-		return []byte("{\"message\": \"User not found in DB.\"}"), errors.New("Not found")
+		fmt.Println("user not found")
+		return TransformedUser{}, ErrorNotFound
 	}
 	// Compare to uid from JWT and make sure user matches.
-	if string(dbUser.ID) != uid {
-		return nil, errors.New("Forbidden")
+	if dbUser.ID != uid {
+		fmt.Println("wrong user")
+		return TransformedUser{}, ErrorForbidden
 	}
 
 	// update first name, level, and goal in the database
-	dbUser.Level = user.Level
-	dbUser.Goal = user.Goal
-	dbUser.Name = user.Name
+	dbUser.Level = u.Level
+	dbUser.Goal = u.Goal
+	dbUser.Name = u.Name
 
 	db.Save(&dbUser)
 
 	// create transmission friendly user struct
-	_user := transformedUser{ID: dbUser.ID, Email: dbUser.Email, Name: user.Name, Level: user.Level, Goal: user.Goal}
+	_user := TransformedUser{ID: dbUser.ID, Email: dbUser.Email, Name: u.Name, Level: u.Level, Goal: u.Goal}
 
-	// marshal user into JSON and return
-	js, err := json.Marshal(_user)
-	return js, err
+	return _user, nil
 }
 
 // --------------------- Helper Functions ---------------------
@@ -148,7 +124,7 @@ func checkPasswordHash(password, hash string) bool {
 }
 
 // JWT helper function
-func createAndSignJWT(user userModel) (string, error) {
+func createAndSignJWT(user UserModel) (string, error) {
 
 	// create the expiration time, build claim, create and sign token, and return.
 	// token expires in 30 days (720 hours)

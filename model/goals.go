@@ -89,7 +89,7 @@ func PostSecondaryGoals(uid string, b []byte) ([]byte, error) {
 
 // GetPrimaryGoal fetches the user's primary goal from the Users db table
 func GetPrimaryGoal(uid string) ([]byte, error) {
-	var user userModel
+	var user UserModel
 	db.First(&user, "id = ?", uid)
 	if user.ID == 0 {
 		return nil, errors.New("Not found")
@@ -104,7 +104,7 @@ func GetPrimaryGoal(uid string) ([]byte, error) {
 
 // SetPrimaryGoal updates the user's primary goal in the database.
 func SetPrimaryGoal(uid string, b []byte) ([]byte, error) {
-	var user userModel
+	var user UserModel
 	var newGoal updatePrimaryGoal
 
 	err := json.Unmarshal(b, &newGoal)

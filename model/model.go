@@ -1,6 +1,7 @@
 package model
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"time"
@@ -17,7 +18,7 @@ import (
 var db *gorm.DB
 
 type (
-	userModel struct {
+	UserModel struct {
 		gorm.Model
 		Email    string `json:"email"`
 		Password string `json:"password"`
@@ -26,7 +27,7 @@ type (
 		Level    string `json:"level"`
 	}
 
-	transformedUser struct {
+	TransformedUser struct {
 		ID    uint   `json:"id"`
 		Email string `json:"email"`
 		Name  string `json:"name"`
@@ -196,6 +197,13 @@ type (
 	}
 )
 
+// Errors
+var ErrorBadRequest = errors.New("Bad request")
+var ErrorUserExists = errors.New("User exists in db")
+var ErrorInternalServer = errors.New("Something went wrong")
+var ErrorForbidden = errors.New("Forbidden")
+var ErrorNotFound = errors.New("Not found")
+
 // init function runs at setup; connects to database
 func init() {
 	err := godotenv.Load()
@@ -217,7 +225,7 @@ func init() {
 		panic("Unable to connect to DB")
 	}
 
-	db.AutoMigrate(&userModel{})
+	db.AutoMigrate(&UserModel{})
 	db.AutoMigrate(&exercise{})
 	db.AutoMigrate(&secondaryGoal{})
 	db.AutoMigrate(&workoutModel{})
