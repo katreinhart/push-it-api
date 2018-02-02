@@ -18,6 +18,7 @@ import (
 var db *gorm.DB
 
 type (
+	// UserModel is the database model for users
 	UserModel struct {
 		gorm.Model
 		Email    string `json:"email"`
@@ -27,6 +28,7 @@ type (
 		Level    string `json:"level"`
 	}
 
+	// TransformedUser is the version that gets sent back over API
 	TransformedUser struct {
 		ID    uint   `json:"id"`
 		Email string `json:"email"`
@@ -179,15 +181,6 @@ type (
 
 	updatePrimaryGoal struct {
 		Goal string `json:"goal"`
-	}
-
-	WeightPlate struct {
-		Plate45 int `json:"45"`
-		Plate35 int `json:"35"`
-		Plate25 int `json:"25"`
-		Plate10 int `json:"10"`
-		Plate05 int `json:"05"`
-		Plate02 int `json:"025"`
 	}
 
 	// CustomClaims for JWT handling

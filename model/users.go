@@ -1,7 +1,6 @@
 package model
 
 import (
-	"fmt"
 	"os"
 	"time"
 
@@ -88,12 +87,10 @@ func SetUserInfo(uid uint, u UserModel) (TransformedUser, error) {
 
 	// handle user not found error
 	if dbUser.ID == 0 {
-		fmt.Println("user not found")
 		return TransformedUser{}, ErrorNotFound
 	}
 	// Compare to uid from JWT and make sure user matches.
 	if dbUser.ID != uid {
-		fmt.Println("wrong user")
 		return TransformedUser{}, ErrorForbidden
 	}
 
