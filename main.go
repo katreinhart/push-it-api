@@ -62,11 +62,7 @@ func main() {
 
 	// Exercise functions
 	api.HandleFunc("/workouts/{id}/exercises", controller.AddExerciseToWorkout).Methods("POST")
-	// api.HandleFunc("/workouts/{id}/exercises", controller.GetExercisesForWorkout).Methods("GET")
 	api.HandleFunc("/workouts/{id}/exercises/sets", controller.AddExerciseSet).Methods("POST")
-
-	// Weight plate function
-	api.HandleFunc("/weightplates/{weight}", controller.FindWeightPlates).Methods("GET")
 
 	api.HandleFunc("/history", controller.History).Methods("GET")
 	api.HandleFunc("/saved", controller.FetchSavedExercises).Methods("GET")
@@ -79,7 +75,7 @@ func main() {
 		SigningMethod: jwt.SigningMethodHS256,
 	})
 
-	// muxRouter uses Negroni handles the middleware for authorization
+	// muxRouter uses Negroni & handles the middleware for authorization
 	muxRouter := http.NewServeMux()
 	muxRouter.Handle("/", r)
 	muxRouter.Handle("/api/", negroni.New(

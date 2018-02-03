@@ -2,6 +2,7 @@ package controller
 
 import (
 	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -18,8 +19,22 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	buf.ReadFrom(r.Body)
 	b := []byte(buf.String())
 
+	var u model.UserModel
+	err := json.Unmarshal(b, &u)
+
+	if err != nil {
+		handleErrorAndRespond(nil, model.ErrorBadRequest, w)
+		return
+	}
+
+	_u, err := model.CreateUser(u)
+	if err != nil {
+		handleErrorAndRespond(nil, model.ErrorUserExists, w)
+		return
+	}
+
 	// Create user in model
-	js, err := model.CreateUser(b)
+	js, err := json.Marshal(_u)
 	handleErrorAndRespond(js, err, w)
 }
 
@@ -31,8 +46,24 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 	buf.ReadFrom(r.Body)
 	b := []byte(buf.String())
 
+	var u model.UserModel
+	var _u model.TransformedUser
+
+	err := json.Unmarshal(b, &u)
+	if err != nil {
+		handleErrorAndRespond(nil, model.ErrorBadRequest, w)
+		return
+	}
+
 	// Login user in model
-	js, err := model.LoginUser(b)
+	_u, err = model.LoginUser(u)
+
+	if err != nil {
+		handleErrorAndRespond(nil, model.ErrorForbidden, w)
+		return
+	}
+
+	js, err := json.Marshal(_u)
 	handleErrorAndRespond(js, err, w)
 }
 
@@ -45,12 +76,31 @@ func SetUserInfo(w http.ResponseWriter, r *http.Request) {
 
 	// Get user ID from token
 	uid, err := GetUIDFromBearerToken(r)
+
+	userID, err := strconv.Atoi(uid)
+
 	if err != nil {
-		handleErrorAndRespond(nil, errors.New("Forbidden"), w)
+		handleErrorAndRespond(nil, model.ErrorInternalServer, w)
+	}
+	_userID := uint(userID)
+
+	var u model.UserModel
+
+	err = json.Unmarshal(b, &u)
+	if err != nil {
+		handleErrorAndRespond(nil, model.ErrorBadRequest, w)
+		return
 	}
 
-	// Login user in model
-	js, err := model.SetUserInfo(uid, b)
+	_u, err := model.SetUserInfo(_userID, u)
+	if err != nil {
+		fmt.Println("something went wrong")
+		handleErrorAndRespond(nil, err, w)
+		return
+	}
+
+	js, err := json.Marshal(_u)
+
 	handleErrorAndRespond(js, err, w)
 }
 

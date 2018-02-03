@@ -1,6 +1,7 @@
 package model
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"time"
@@ -17,7 +18,8 @@ import (
 var db *gorm.DB
 
 type (
-	userModel struct {
+	// UserModel is the database model for users
+	UserModel struct {
 		gorm.Model
 		Email    string `json:"email"`
 		Password string `json:"password"`
@@ -26,7 +28,8 @@ type (
 		Level    string `json:"level"`
 	}
 
-	transformedUser struct {
+	// TransformedUser is the version that gets sent back over API
+	TransformedUser struct {
 		ID    uint   `json:"id"`
 		Email string `json:"email"`
 		Name  string `json:"name"`
@@ -35,7 +38,8 @@ type (
 		Token string `json:"token"`
 	}
 
-	workoutModel struct {
+	// WorkoutModel is the database model for storing workouts
+	WorkoutModel struct {
 		gorm.Model
 		UserID    string    `json:"user_id"`
 		Start     time.Time `json:"start_time"`
@@ -45,35 +49,37 @@ type (
 		Completed bool      `json:"completed"`
 	}
 
-	updateWorkoutModel struct {
+	// UpdateWorkout format sent from front end at completion of workout
+	UpdateWorkout struct {
 		ID        string `json:"id"`
 		Completed bool   `json:"completed"`
 		Rating    int    `json:"rating"`
 		Comments  string `json:"comments"`
 	}
 
-	completedWorkout struct {
+	// CompletedWorkout is used to send all nested info about finished workouts back to front end
+	CompletedWorkout struct {
 		User      string                       `json:"uid"`
 		WorkoutID string                       `json:"workout_id"`
 		Start     time.Time                    `json:"start_time"`
 		End       time.Time                    `json:"finish_time"`
 		Rating    int                          `json:"rating"`
 		Comments  string                       `json:"comments"`
-		Exercises []transformedWorkoutExercise `json:"exercises"`
-		Sets      []transformedWorkoutSet      `json:"sets"`
+		Exercises []TransformedWorkoutExercise `json:"exercises"`
+		Sets      []WorkoutSet                 `json:"sets"`
 	}
 
 	savedWorkout struct {
 		User      string                       `json:"uid"`
 		WorkoutID string                       `json:"workout_id"`
-		Exercises []transformedWorkoutExercise `json:"exercises"`
+		Exercises []TransformedWorkoutExercise `json:"exercises"`
 	}
 
 	transformedSavedWorkout struct {
 		ID        uint                         `json:"id"`
 		User      string                       `json:"uid"`
 		WorkoutID string                       `json:"workout_id"`
-		Exercises []transformedWorkoutExercise `json:"exercises"`
+		Exercises []TransformedWorkoutExercise `json:"exercises"`
 	}
 
 	exercise struct {
@@ -88,7 +94,8 @@ type (
 		Link string `json:"info_url"`
 	}
 
-	workoutExercise struct {
+	// WorkoutExercise is the database representation of each exercise performed.
+	WorkoutExercise struct {
 		gorm.Model
 		WorkoutID      string `json:"workout_id"`
 		ExerciseID     uint   `json:"exercise_id"`
@@ -96,7 +103,8 @@ type (
 		GoalRepsPerSet int    `json:"goal_reps_per_set"`
 	}
 
-	transformedWorkoutExercise struct {
+	// TransformedWorkoutExercise is the representation sent back to the front end
+	TransformedWorkoutExercise struct {
 		WorkoutID      string `json:"workout_id"`
 		ExerciseID     uint   `json:"exercise_id"`
 		ExerciseName   string `json:"exercise_name"`
@@ -104,37 +112,33 @@ type (
 		GoalRepsPerSet int    `json:"goal_reps_per_set"`
 	}
 
-	workoutExerciseAsPosted struct {
+	// WorkoutExerciseAsPosted is the representation sent in from the front end
+	WorkoutExerciseAsPosted struct {
 		ExerciseName   string `json:"exercise_name"`
 		GoalSets       int    `json:"goal_sets"`
 		GoalRepsPerSet int    `json:"goal_reps"`
 	}
 
-	workoutExerciseSet struct {
+	// WorkoutExerciseSet is the database representation of a single set
+	WorkoutExerciseSet struct {
 		gorm.Model
-		WorkoutExerciseID string `json:"workout_exercise_id"`
-		WorkoutID         string `json:"workout_id"`
-		ExerciseName      string `json:"exercise_name"`
-		Weight            int    `json:"weight"`
-		RepsAttempted     int    `json:"reps_att"`
-		RepsCompleted     int    `json:"reps_comp"`
+		WorkoutID     string `json:"workout_id"`
+		ExerciseName  string `json:"exercise_name"`
+		Weight        int    `json:"weight"`
+		RepsAttempted int    `json:"reps_att"`
+		RepsCompleted int    `json:"reps_comp"`
 	}
 
-	workoutSetAsPosted struct {
+	// WorkoutSet is the representation sent back and forth from the front end
+	WorkoutSet struct {
 		Weight        int    `json:"weight"`
 		Exercise      string `json:"exercise_name"`
 		RepsAttempted int    `json:"reps_att"`
 		RepsCompleted int    `json:"reps_comp"`
 	}
 
-	transformedWorkoutSet struct {
-		ExerciseName  string `json:"exercise"`
-		Weight        int    `json:"weight"`
-		RepsAttempted int    `json:"reps_att"`
-		RepsCompleted int    `json:"reps_comp"`
-	}
-
-	postedTimestamps struct {
+	// PostedTimestamps is the format that timestamps come in
+	PostedTimestamps struct {
 		StartedAt  time.Time `json:"started_at"`
 		FinishedAt time.Time `json:"finished_at"`
 	}
@@ -180,21 +184,19 @@ type (
 		Goal string `json:"goal"`
 	}
 
-	WeightPlate struct {
-		Plate45 int `json:"45"`
-		Plate35 int `json:"35"`
-		Plate25 int `json:"25"`
-		Plate10 int `json:"10"`
-		Plate05 int `json:"05"`
-		Plate02 int `json:"025"`
-	}
-
 	// CustomClaims for JWT handling
 	CustomClaims struct {
 		UID uint `json:"uid"`
 		jwt.StandardClaims
 	}
 )
+
+// Errors
+var ErrorBadRequest = errors.New("Bad request")
+var ErrorUserExists = errors.New("User exists in db")
+var ErrorInternalServer = errors.New("Something went wrong")
+var ErrorForbidden = errors.New("Forbidden")
+var ErrorNotFound = errors.New("Not found")
 
 // init function runs at setup; connects to database
 func init() {
@@ -217,10 +219,10 @@ func init() {
 		panic("Unable to connect to DB")
 	}
 
-	db.AutoMigrate(&userModel{})
+	db.AutoMigrate(&UserModel{})
 	db.AutoMigrate(&exercise{})
 	db.AutoMigrate(&secondaryGoal{})
-	db.AutoMigrate(&workoutModel{})
-	db.AutoMigrate(&workoutExercise{})
-	db.AutoMigrate(&workoutExerciseSet{})
+	db.AutoMigrate(&WorkoutModel{})
+	db.AutoMigrate(&WorkoutExercise{})
+	db.AutoMigrate(&WorkoutExerciseSet{})
 }
