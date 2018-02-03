@@ -8,21 +8,58 @@ import (
 )
 
 // CreateWorkout instantiates a new workout object with data from request body
-func CreateWorkout(uid string, b []byte) ([]byte, error) {
-	var workout workoutModel
+func CreateWorkout(wk WorkoutModel) WorkoutModel {
 
-	err := json.Unmarshal(b, &workout)
+	db.Save(&wk)
 
-	if err != nil {
-		return nil, err
+	return wk
+}
+
+// GetWorkout returns the given workout based on workout ID (wid)
+func GetWorkout(wid string) (WorkoutModel, error) {
+	var wk WorkoutModel
+
+	db.First(&wk, "id = ?", wid)
+
+	if wk.ID == 0 {
+		return WorkoutModel{}, ErrorNotFound
 	}
-	workout.UserID = uid
 
-	db.Save(&workout)
+	return wk, nil
+}
 
-	js, err := json.Marshal(&workout)
+// GetCompletedWorkout returns the workout with nested exercises and sets.
+func GetCompletedWorkout(wk WorkoutModel) (CompletedWorkout, error) {
 
-	return js, err
+	var completed CompletedWorkout
+
+	var dbExercises []workoutExercise
+	var dbSets []workoutExerciseSet
+
+	var _exercises []transformedWorkoutExercise
+	var _sets []transformedWorkoutSet
+
+	db.Find(&dbExercises, "workout_id = ?", wk.ID)
+
+	for _, ex := range dbExercises {
+		db.Find(&dbSets, "workout_exercise_id = ?", ex.ID)
+		for _, set := range dbSets {
+			name, _ := getExerciseName(ex.ID)
+			_sets = append(_sets, transformedWorkoutSet{ExerciseName: name, Weight: set.Weight, RepsAttempted: set.RepsAttempted, RepsCompleted: set.RepsCompleted})
+		}
+		exName, err := getExerciseName(ex.ExerciseID)
+		if err != nil {
+			panic("exercise not found")
+		}
+		_exercises = append(_exercises, transformedWorkoutExercise{WorkoutID: ex.WorkoutID, ExerciseID: ex.ExerciseID, ExerciseName: exName, GoalSets: ex.GoalSets, GoalRepsPerSet: ex.GoalRepsPerSet})
+	}
+
+	workoutID := strconv.Itoa(int(wk.ID))
+	completed.WorkoutID = workoutID
+	completed.Sets = _sets
+	completed.Exercises = _exercises
+
+	return completed, nil
 }
 
 // AddExerciseToWorkout takes a wid which is existing workout and adds a new exercise to it.
@@ -54,52 +91,6 @@ func AddExerciseToWorkout(wid string, b []byte) ([]byte, error) {
 	return js, err
 }
 
-// GetWorkout returns the given workout based on workout ID (wid)
-func GetWorkout(wid string) ([]byte, error) {
-	var workout workoutModel
-	var completed completedWorkout
-
-	db.First(&workout, "id = ?", wid)
-
-	if workout.ID == 0 {
-		return nil, errors.New("Not found")
-	}
-
-	if workout.Completed {
-		var dbExercises []workoutExercise
-		var dbSets []workoutExerciseSet
-
-		var _exercises []transformedWorkoutExercise
-		var _sets []transformedWorkoutSet
-
-		db.Find(&dbExercises, "workout_id = ?", wid)
-
-		for _, ex := range dbExercises {
-			db.Find(&dbSets, "workout_exercise_id = ?", ex.ID)
-			for _, set := range dbSets {
-				name, _ := getExerciseName(ex.ID)
-				_sets = append(_sets, transformedWorkoutSet{ExerciseName: name, Weight: set.Weight, RepsAttempted: set.RepsAttempted, RepsCompleted: set.RepsCompleted})
-			}
-			exName, err := getExerciseName(ex.ExerciseID)
-			if err != nil {
-				panic("exercise not found")
-			}
-			_exercises = append(_exercises, transformedWorkoutExercise{WorkoutID: ex.WorkoutID, ExerciseID: ex.ExerciseID, ExerciseName: exName, GoalSets: ex.GoalSets, GoalRepsPerSet: ex.GoalRepsPerSet})
-		}
-
-		workoutID := strconv.Itoa(int(workout.ID))
-		completed.WorkoutID = workoutID
-		completed.Sets = _sets
-		completed.Exercises = _exercises
-
-		js, err := json.Marshal(completed)
-
-		return js, err
-	}
-
-	return json.Marshal(workout)
-}
-
 // AddExerciseSet adds a set of the given exercise to the workout in question.
 func AddExerciseSet(wid string, b []byte) ([]byte, error) {
 
@@ -126,7 +117,7 @@ func AddExerciseSet(wid string, b []byte) ([]byte, error) {
 
 // MarkWorkoutAsCompleted updates workout given supplied body b
 func MarkWorkoutAsCompleted(uid string, id string, b []byte) ([]byte, error) {
-	var workout workoutModel
+	var workout WorkoutModel
 	var workoutUpdate updateWorkoutModel
 
 	db.First(&workout, "id = ?", id)
@@ -152,7 +143,7 @@ func MarkWorkoutAsCompleted(uid string, id string, b []byte) ([]byte, error) {
 // UpdateWorkoutTimestamps updates database entry for given workout with started and completed timestamps
 func UpdateWorkoutTimestamps(id string, b []byte) ([]byte, error) {
 	var timestamps postedTimestamps
-	var workout workoutModel
+	var workout WorkoutModel
 
 	err := json.Unmarshal(b, &timestamps)
 	if err != nil {

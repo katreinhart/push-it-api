@@ -1,29 +1,29 @@
 package controller
 
-import "net/http"
+import (
+	"net/http"
+
+	"github.com/katreinhart/push-it-api/model"
+)
 
 func handleErrorAndRespond(js []byte, err error, w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "application/json")
 
 	// handle the error cases
 	if err != nil {
-		if err.Error() == "Not found" {
-			w.WriteHeader(http.StatusNotFound)
-		} else if err.Error() == "Error saving to database" {
+		if err == model.ErrorBadRequest {
+			w.WriteHeader(http.StatusBadRequest)
+		} else if err == model.ErrorUserExists {
+			w.WriteHeader(http.StatusUnprocessableEntity)
+		} else if err == model.ErrorInternalServer {
 			w.WriteHeader(http.StatusInternalServerError)
-		} else if err.Error() == "Something went wrong" {
-			w.WriteHeader(http.StatusInternalServerError)
-		} else if err.Error() == "Update error" {
-			w.WriteHeader(http.StatusInternalServerError)
-		} else if err.Error() == "User already exists" {
-			w.WriteHeader(http.StatusFound)
-		} else if err.Error() == "Unauthorized" {
+		} else if err == model.ErrorForbidden {
 			w.WriteHeader(http.StatusUnauthorized)
 		} else {
 			w.WriteHeader(http.StatusInternalServerError)
 		}
 
-		// in any case, send back the message created in the model
+		// in any case, send back the message if there is one
 		w.Write(js)
 		return
 	}

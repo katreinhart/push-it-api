@@ -38,7 +38,8 @@ type (
 		Token string `json:"token"`
 	}
 
-	workoutModel struct {
+	// WorkoutModel is the database model for storing workouts
+	WorkoutModel struct {
 		gorm.Model
 		UserID    string    `json:"user_id"`
 		Start     time.Time `json:"start_time"`
@@ -55,7 +56,7 @@ type (
 		Comments  string `json:"comments"`
 	}
 
-	completedWorkout struct {
+	CompletedWorkout struct {
 		User      string                       `json:"uid"`
 		WorkoutID string                       `json:"workout_id"`
 		Start     time.Time                    `json:"start_time"`
@@ -221,7 +222,7 @@ func init() {
 	db.AutoMigrate(&UserModel{})
 	db.AutoMigrate(&exercise{})
 	db.AutoMigrate(&secondaryGoal{})
-	db.AutoMigrate(&workoutModel{})
+	db.AutoMigrate(&WorkoutModel{})
 	db.AutoMigrate(&workoutExercise{})
 	db.AutoMigrate(&workoutExerciseSet{})
 }

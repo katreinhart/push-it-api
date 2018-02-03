@@ -8,8 +8,8 @@ import (
 
 // History retrieves all of the given user's completed workouts and returns nested objects
 func History(uid string) ([]byte, error) {
-	var workouts []workoutModel
-	var _workouts []completedWorkout
+	var workouts []WorkoutModel
+	var _workouts []CompletedWorkout
 
 	var exercises []workoutExercise
 	var sets []workoutExerciseSet
@@ -36,7 +36,7 @@ func History(uid string) ([]byte, error) {
 			_sets = append(_sets, transformedWorkoutSet{ExerciseName: set.ExerciseName, Weight: set.Weight, RepsAttempted: set.RepsAttempted, RepsCompleted: set.RepsCompleted})
 		}
 		workoutID := strconv.Itoa(int(wko.ID))
-		_workouts = append(_workouts, completedWorkout{User: uid, WorkoutID: workoutID, Start: wko.Start, End: wko.End, Rating: wko.Rating, Comments: wko.Comments, Exercises: _exercises, Sets: _sets})
+		_workouts = append(_workouts, CompletedWorkout{User: uid, WorkoutID: workoutID, Start: wko.Start, End: wko.End, Rating: wko.Rating, Comments: wko.Comments, Exercises: _exercises, Sets: _sets})
 	}
 
 	js, err := json.Marshal(_workouts)
@@ -45,7 +45,7 @@ func History(uid string) ([]byte, error) {
 }
 
 func FetchSavedExercises(uid string) ([]byte, error) {
-	var workouts []workoutModel
+	var workouts []WorkoutModel
 	var _workouts []savedWorkout
 	var exercises []workoutExercise
 

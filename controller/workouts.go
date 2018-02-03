@@ -2,8 +2,8 @@ package controller
 
 import (
 	"bytes"
+	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -13,9 +13,9 @@ import (
 // CreateWorkout instantiates a new workout object with data from request body
 func CreateWorkout(w http.ResponseWriter, r *http.Request) {
 	uid, err := GetUIDFromBearerToken(r)
-	fmt.Println("UID", uid)
+
 	if err != nil {
-		handleErrorAndRespond(nil, errors.New("Forbidden"), w)
+		handleErrorAndRespond(nil, model.ErrorForbidden, w)
 	}
 
 	// get the body from the request
@@ -23,7 +23,14 @@ func CreateWorkout(w http.ResponseWriter, r *http.Request) {
 	buf.ReadFrom(r.Body)
 	b := []byte(buf.String())
 
-	js, err := model.CreateWorkout(uid, b)
+	var wk model.WorkoutModel
+	err = json.Unmarshal(b, &wk)
+
+	wk.UserID = uid
+
+	_wk := model.CreateWorkout(wk)
+
+	js, err := json.Marshal(_wk)
 
 	handleErrorAndRespond(js, err, w)
 }
@@ -34,7 +41,29 @@ func GetWorkout(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, _ := vars["id"]
 
-	js, err := model.GetWorkout(id)
+	var wk model.WorkoutModel
+
+	wk, err := model.GetWorkout(id)
+
+	if err != nil {
+		handleErrorAndRespond(nil, model.ErrorNotFound, w)
+		return
+	}
+
+	if wk.Completed {
+		cw, err := model.GetCompletedWorkout(wk)
+
+		if err != nil {
+			handleErrorAndRespond(nil, err, w)
+			return
+		}
+
+		js, err := json.Marshal(cw)
+		handleErrorAndRespond(js, err, w)
+		return
+	}
+
+	js, err := json.Marshal(wk)
 
 	handleErrorAndRespond(js, err, w)
 }
