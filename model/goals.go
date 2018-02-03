@@ -1,8 +1,6 @@
 package model
 
 import (
-	"encoding/json"
-	"errors"
 	"fmt"
 )
 
@@ -36,10 +34,9 @@ func PostSecondaryGoals(uid string, g1 SecondaryGoal, g2 SecondaryGoal) (Goals, 
 
 	db.Find(&goals, "user_id = ?", uid)
 	if len(goals) > 0 {
-		// overwrite existing goals
-		fmt.Println("overwriting existing goals")
 		db.Delete(&goals)
 	}
+
 	// create new goals
 	fmt.Println(g1.GoalDate, g1.GoalWeight, g1.Exercise)
 	fmt.Println(g2.GoalDate, g2.GoalWeight, g2.Exercise)
@@ -49,7 +46,6 @@ func PostSecondaryGoals(uid string, g1 SecondaryGoal, g2 SecondaryGoal) (Goals, 
 	db.Save(&goal1)
 	db.Save(&goal2)
 
-	fmt.Println("DB saved")
 	fmt.Println(goal1, goal2)
 
 	// Return a success message (maybe edit later to return the question?)
@@ -57,33 +53,25 @@ func PostSecondaryGoals(uid string, g1 SecondaryGoal, g2 SecondaryGoal) (Goals, 
 }
 
 // GetPrimaryGoal fetches the user's primary goal from the Users db table
-func GetPrimaryGoal(uid string) ([]byte, error) {
+func GetPrimaryGoal(uid string) (PrimaryGoal, error) {
 	var user UserModel
+
 	db.First(&user, "id = ?", uid)
 	if user.ID == 0 {
-		return nil, errors.New("Not found")
+		return PrimaryGoal{}, ErrorNotFound
 	}
 
 	var _goal = PrimaryGoal{Goal: user.Goal}
 
-	js, err := json.Marshal(_goal)
-
-	return js, err
+	return _goal, nil
 }
 
 // SetPrimaryGoal updates the user's primary goal in the database.
-func SetPrimaryGoal(uid string, b []byte) ([]byte, error) {
+func SetPrimaryGoal(uid string, newGoal PrimaryGoal) (PrimaryGoal, error) {
 	var user UserModel
-	var newGoal PrimaryGoal
 
-	err := json.Unmarshal(b, &newGoal)
-
-	if err != nil {
-		return nil, errors.New("Something went wrong")
-	}
 	db.First(&user, "id = ?", uid)
 	db.Model(&user).Update("goal", newGoal.Goal)
 
-	return []byte("{\"message\": \"Goal successfully updated\"}"), nil
-
+	return newGoal, nil
 }

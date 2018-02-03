@@ -3,7 +3,6 @@ package controller
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 
@@ -74,25 +73,50 @@ func PostSecondaryGoals(w http.ResponseWriter, r *http.Request) {
 // GetPrimaryGoal gets the user's primary goal from the database
 func GetPrimaryGoal(w http.ResponseWriter, r *http.Request) {
 	uid, err := GetUIDFromBearerToken(r)
+
 	if err != nil {
-		handleErrorAndRespond(nil, errors.New("Not found"), w)
+		handleErrorAndRespond(nil, model.ErrorForbidden, w)
+		return
 	}
 
-	js, err := model.GetPrimaryGoal(uid)
+	goal, err := model.GetPrimaryGoal(uid)
+
+	if err != nil {
+		handleErrorAndRespond(nil, err, w)
+		return
+	}
+
+	js, err := json.Marshal(goal)
 	handleErrorAndRespond(js, err, w)
 }
 
 // SetPrimaryGoal sets the user's primary goal in the database
 func SetPrimaryGoal(w http.ResponseWriter, r *http.Request) {
+
 	uid, err := GetUIDFromBearerToken(r)
 	if err != nil {
-		handleErrorAndRespond(nil, errors.New("Not found"), w)
+		handleErrorAndRespond(nil, model.ErrorNotFound, w)
+		return
 	}
 
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(r.Body)
 	b := []byte(buf.String())
 
-	js, err := model.SetPrimaryGoal(uid, b)
+	var newGoal model.PrimaryGoal
+	err = json.Unmarshal(b, &newGoal)
+
+	if err != nil {
+		handleErrorAndRespond(nil, err, w)
+		return
+	}
+
+	goal, err := model.SetPrimaryGoal(uid, newGoal)
+	if err != nil {
+		handleErrorAndRespond(nil, err, w)
+		return
+	}
+
+	js, err := json.Marshal(goal)
 	handleErrorAndRespond(js, err, w)
 }
