@@ -71,6 +71,7 @@ func AddExerciseToWorkout(wid string, ep WorkoutExerciseAsPosted) (WorkoutExerci
 	}
 
 	ex.ExerciseID = exerciseID
+	ex.GoalWeight = ep.GoalWeight
 	ex.WorkoutID = wid
 	ex.GoalSets = ep.GoalSets
 	ex.GoalRepsPerSet = ep.GoalRepsPerSet

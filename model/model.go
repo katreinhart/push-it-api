@@ -94,6 +94,7 @@ type (
 		gorm.Model
 		WorkoutID      string `json:"workout_id"`
 		ExerciseID     uint   `json:"exercise_id"`
+		GoalWeight     int    `json:"goal_weight"`
 		GoalSets       int    `json:"goal_sets"`
 		GoalRepsPerSet int    `json:"goal_reps_per_set"`
 	}
@@ -103,6 +104,7 @@ type (
 		WorkoutID      string `json:"workout_id"`
 		ExerciseID     uint   `json:"exercise_id"`
 		ExerciseName   string `json:"exercise_name"`
+		GoalWeight     int    `json:"goal_weight"`
 		GoalSets       int    `json:"goal_sets"`
 		GoalRepsPerSet int    `json:"goal_reps_per_set"`
 	}
@@ -110,6 +112,7 @@ type (
 	// WorkoutExerciseAsPosted is the representation sent in from the front end
 	WorkoutExerciseAsPosted struct {
 		ExerciseName   string `json:"exercise_name"`
+		GoalWeight     int    `json:"goal_weight"`
 		GoalSets       int    `json:"goal_sets"`
 		GoalRepsPerSet int    `json:"goal_reps"`
 	}
