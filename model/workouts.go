@@ -1,8 +1,6 @@
 package model
 
 import (
-	"encoding/json"
-	"errors"
 	"strconv"
 )
 
@@ -98,49 +96,32 @@ func AddExerciseSet(wid string, wsp WorkoutSet) (WorkoutExerciseSet, error) {
 }
 
 // MarkWorkoutAsCompleted updates workout given supplied body b
-func MarkWorkoutAsCompleted(uid string, id string, b []byte) ([]byte, error) {
+func MarkWorkoutAsCompleted(uid string, id string, uw UpdateWorkout) (WorkoutModel, error) {
 	var workout WorkoutModel
-	var workoutUpdate updateWorkoutModel
 
 	db.First(&workout, "id = ?", id)
 	if workout.UserID != uid {
-		return nil, errors.New("Forbidden")
+		return WorkoutModel{}, ErrorForbidden
 	}
 
-	err := json.Unmarshal(b, &workoutUpdate)
+	db.Model(&workout).Update("completed", uw.Completed)
+	db.Model(&workout).Update("rating", uw.Rating)
+	db.Model(&workout).Update("comments", uw.Comments)
 
-	if err != nil {
-		return nil, err
-	}
-
-	db.Model(&workout).Update("completed", workoutUpdate.Completed)
-	db.Model(&workout).Update("rating", workoutUpdate.Rating)
-	db.Model(&workout).Update("comments", workoutUpdate.Comments)
-
-	js, err := json.Marshal(workout)
-
-	return js, err
+	return workout, nil
 }
 
 // UpdateWorkoutTimestamps updates database entry for given workout with started and completed timestamps
-func UpdateWorkoutTimestamps(id string, b []byte) ([]byte, error) {
-	var timestamps postedTimestamps
+func UpdateWorkoutTimestamps(id string, ts PostedTimestamps) (WorkoutModel, error) {
 	var workout WorkoutModel
-
-	err := json.Unmarshal(b, &timestamps)
-	if err != nil {
-		return nil, err
-	}
 
 	db.First(&workout, "id = ?", id)
 	if workout.ID == 0 {
-		return nil, errors.New("Not found")
+		return WorkoutModel{}, ErrorNotFound
 	}
 
-	db.Model(&workout).Update("start", timestamps.StartedAt)
-	db.Model(&workout).Update("end", timestamps.FinishedAt)
+	db.Model(&workout).Update("start", ts.StartedAt)
+	db.Model(&workout).Update("end", ts.FinishedAt)
 
-	js, err := json.Marshal(workout)
-
-	return js, err
+	return workout, nil
 }

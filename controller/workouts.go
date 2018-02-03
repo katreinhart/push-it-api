@@ -3,7 +3,6 @@ package controller
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -139,7 +138,8 @@ func MarkWorkoutAsCompleted(w http.ResponseWriter, r *http.Request) {
 	// Get user ID from token
 	uid, err := GetUIDFromBearerToken(r)
 	if err != nil {
-		handleErrorAndRespond(nil, errors.New("Forbidden"), w)
+		handleErrorAndRespond(nil, model.ErrorForbidden, w)
+		return
 	}
 
 	// get vars from url params
@@ -151,7 +151,18 @@ func MarkWorkoutAsCompleted(w http.ResponseWriter, r *http.Request) {
 	buf.ReadFrom(r.Body)
 	b := []byte(buf.String())
 
-	js, err := model.MarkWorkoutAsCompleted(uid, id, b)
+	var wu model.UpdateWorkout
+
+	err = json.Unmarshal(b, &wu)
+
+	wk, err := model.MarkWorkoutAsCompleted(uid, id, wu)
+
+	if err != nil {
+		handleErrorAndRespond(nil, err, w)
+		return
+	}
+
+	js, err := json.Marshal(wk)
 
 	handleErrorAndRespond(js, err, w)
 }
@@ -167,7 +178,24 @@ func UpdateWorkoutTimestamps(w http.ResponseWriter, r *http.Request) {
 	buf.ReadFrom(r.Body)
 	b := []byte(buf.String())
 
-	js, err := model.UpdateWorkoutTimestamps(id, b)
+	var timestamps model.PostedTimestamps
+
+	err := json.Unmarshal(b, &timestamps)
+	if err != nil {
+		handleErrorAndRespond(nil, err, w)
+		return
+	}
+
+	var workout model.WorkoutModel
+
+	workout, err = model.UpdateWorkoutTimestamps(id, timestamps)
+
+	if err != nil {
+		handleErrorAndRespond(nil, err, w)
+		return
+	}
+
+	js, err := json.Marshal(workout)
 
 	handleErrorAndRespond(js, err, w)
 }

@@ -62,7 +62,6 @@ func main() {
 
 	// Exercise functions
 	api.HandleFunc("/workouts/{id}/exercises", controller.AddExerciseToWorkout).Methods("POST")
-	// api.HandleFunc("/workouts/{id}/exercises", controller.GetExercisesForWorkout).Methods("GET")
 	api.HandleFunc("/workouts/{id}/exercises/sets", controller.AddExerciseSet).Methods("POST")
 
 	api.HandleFunc("/history", controller.History).Methods("GET")

@@ -49,13 +49,15 @@ type (
 		Completed bool      `json:"completed"`
 	}
 
-	updateWorkoutModel struct {
+	// UpdateWorkout format sent from front end at completion of workout
+	UpdateWorkout struct {
 		ID        string `json:"id"`
 		Completed bool   `json:"completed"`
 		Rating    int    `json:"rating"`
 		Comments  string `json:"comments"`
 	}
 
+	// CompletedWorkout is used to send all nested info about finished workouts back to front end
 	CompletedWorkout struct {
 		User      string                       `json:"uid"`
 		WorkoutID string                       `json:"workout_id"`
@@ -135,7 +137,8 @@ type (
 		RepsCompleted int    `json:"reps_comp"`
 	}
 
-	postedTimestamps struct {
+	// PostedTimestamps is the format that timestamps come in
+	PostedTimestamps struct {
 		StartedAt  time.Time `json:"started_at"`
 		FinishedAt time.Time `json:"finished_at"`
 	}
