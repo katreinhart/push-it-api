@@ -61,7 +61,7 @@ func FetchSavedWorkouts(uid string) ([]SavedWorkout, error) {
 		db.Find(&exercises, "workout_id = ?", wko.ID)
 		for _, ex := range exercises {
 			var exerciseName, _ = getExerciseName(ex.ExerciseID)
-			_exercises = append(_exercises, TransformedWorkoutExercise{WorkoutID: strID, ExerciseID: ex.ID, ExerciseName: exerciseName, GoalSets: ex.GoalSets, GoalRepsPerSet: ex.GoalRepsPerSet})
+			_exercises = append(_exercises, TransformedWorkoutExercise{WorkoutID: strID, ExerciseID: ex.ID, ExerciseName: exerciseName, GoalWeight: ex.GoalWeight, GoalSets: ex.GoalSets, GoalRepsPerSet: ex.GoalRepsPerSet})
 		}
 		workoutID := strconv.Itoa(int(wko.ID))
 		_workouts = append(_workouts, SavedWorkout{UserID: uid, CreatedAt: wko.CreatedAt, WorkoutID: workoutID, Exercises: _exercises})
