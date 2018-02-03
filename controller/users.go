@@ -3,6 +3,7 @@ package controller
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -77,6 +78,6 @@ func GetUIDFromBearerToken(r *http.Request) (string, error) {
 
 	// UID parsed from token is of type float64; we need it as a string.
 	struid := strconv.FormatFloat(uid, 'f', -1, 64)
-
+	fmt.Println("Got uid from bearer token, UID is ", struid)
 	return struid, err
 }
