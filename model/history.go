@@ -11,7 +11,7 @@ func History(uid string) ([]byte, error) {
 	var workouts []WorkoutModel
 	var _workouts []CompletedWorkout
 
-	var exercises []workoutExercise
+	var exercises []WorkoutExercise
 	var sets []workoutExerciseSet
 
 	// find all workouts in db with user uid
@@ -22,14 +22,14 @@ func History(uid string) ([]byte, error) {
 
 	// find all associated exercises and sets associated with each workout
 	for _, wko := range workouts {
-		var _exercises []transformedWorkoutExercise
+		var _exercises []TransformedWorkoutExercise
 		var _sets []transformedWorkoutSet
 
 		var strID = strconv.Itoa(int(wko.ID))
 		db.Find(&exercises, "workout_id = ?", wko.ID)
 		for _, ex := range exercises {
 			var exerciseName, _ = getExerciseName(ex.ExerciseID)
-			_exercises = append(_exercises, transformedWorkoutExercise{WorkoutID: strID, ExerciseID: ex.ID, ExerciseName: exerciseName, GoalSets: ex.GoalRepsPerSet, GoalRepsPerSet: ex.GoalRepsPerSet})
+			_exercises = append(_exercises, TransformedWorkoutExercise{WorkoutID: strID, ExerciseID: ex.ID, ExerciseName: exerciseName, GoalSets: ex.GoalRepsPerSet, GoalRepsPerSet: ex.GoalRepsPerSet})
 		}
 		db.Find(&sets, "workout_id = ?", strID)
 		for _, set := range sets {
@@ -47,7 +47,7 @@ func History(uid string) ([]byte, error) {
 func FetchSavedExercises(uid string) ([]byte, error) {
 	var workouts []WorkoutModel
 	var _workouts []savedWorkout
-	var exercises []workoutExercise
+	var exercises []WorkoutExercise
 
 	// find all workouts in db with user uid
 	db.Find(&workouts, "user_id = ?", uid).Where("completed = ?", false)
@@ -57,13 +57,13 @@ func FetchSavedExercises(uid string) ([]byte, error) {
 
 	// find all associated exercises and sets associated with each workout
 	for _, wko := range workouts {
-		var _exercises []transformedWorkoutExercise
+		var _exercises []TransformedWorkoutExercise
 
 		var strID = strconv.Itoa(int(wko.ID))
 		db.Find(&exercises, "workout_id = ?", wko.ID)
 		for _, ex := range exercises {
 			var exerciseName, _ = getExerciseName(ex.ExerciseID)
-			_exercises = append(_exercises, transformedWorkoutExercise{WorkoutID: strID, ExerciseID: ex.ID, ExerciseName: exerciseName, GoalSets: ex.GoalSets, GoalRepsPerSet: ex.GoalRepsPerSet})
+			_exercises = append(_exercises, TransformedWorkoutExercise{WorkoutID: strID, ExerciseID: ex.ID, ExerciseName: exerciseName, GoalSets: ex.GoalSets, GoalRepsPerSet: ex.GoalRepsPerSet})
 		}
 		workoutID := strconv.Itoa(int(wko.ID))
 		_workouts = append(_workouts, savedWorkout{User: uid, WorkoutID: workoutID, Exercises: _exercises})

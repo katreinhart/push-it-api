@@ -3,7 +3,6 @@ package model
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"strconv"
 )
 
@@ -33,10 +32,10 @@ func GetCompletedWorkout(wk WorkoutModel) (CompletedWorkout, error) {
 
 	var completed CompletedWorkout
 
-	var dbExercises []workoutExercise
+	var dbExercises []WorkoutExercise
 	var dbSets []workoutExerciseSet
 
-	var _exercises []transformedWorkoutExercise
+	var _exercises []TransformedWorkoutExercise
 	var _sets []transformedWorkoutSet
 
 	db.Find(&dbExercises, "workout_id = ?", wk.ID)
@@ -51,7 +50,7 @@ func GetCompletedWorkout(wk WorkoutModel) (CompletedWorkout, error) {
 		if err != nil {
 			panic("exercise not found")
 		}
-		_exercises = append(_exercises, transformedWorkoutExercise{WorkoutID: ex.WorkoutID, ExerciseID: ex.ExerciseID, ExerciseName: exName, GoalSets: ex.GoalSets, GoalRepsPerSet: ex.GoalRepsPerSet})
+		_exercises = append(_exercises, TransformedWorkoutExercise{WorkoutID: ex.WorkoutID, ExerciseID: ex.ExerciseID, ExerciseName: exName, GoalSets: ex.GoalSets, GoalRepsPerSet: ex.GoalRepsPerSet})
 	}
 
 	workoutID := strconv.Itoa(int(wk.ID))
@@ -63,32 +62,24 @@ func GetCompletedWorkout(wk WorkoutModel) (CompletedWorkout, error) {
 }
 
 // AddExerciseToWorkout takes a wid which is existing workout and adds a new exercise to it.
-func AddExerciseToWorkout(wid string, b []byte) ([]byte, error) {
-	var exercisePosted workoutExerciseAsPosted
-	var exercise workoutExercise
+func AddExerciseToWorkout(wid string, ep WorkoutExerciseAsPosted) (WorkoutExercise, error) {
 
-	err := json.Unmarshal(b, &exercisePosted)
+	var ex WorkoutExercise
+
+	exerciseID, err := getExerciseID(ep.ExerciseName)
 
 	if err != nil {
-		return nil, err
-	}
-	fmt.Println("asdf")
-
-	exerciseID, err := getExerciseID(exercisePosted.ExerciseName)
-	fmt.Println(exerciseID)
-	if err != nil {
-		return nil, err
+		return WorkoutExercise{}, err
 	}
 
-	exercise.ExerciseID = exerciseID
-	exercise.WorkoutID = wid
-	exercise.GoalSets = exercisePosted.GoalSets
-	exercise.GoalRepsPerSet = exercisePosted.GoalRepsPerSet
+	ex.ExerciseID = exerciseID
+	ex.WorkoutID = wid
+	ex.GoalSets = ep.GoalSets
+	ex.GoalRepsPerSet = ep.GoalRepsPerSet
 
-	db.Save(&exercise)
+	db.Save(&ex)
 
-	js, err := json.Marshal(&exercise)
-	return js, err
+	return ex, nil
 }
 
 // AddExerciseSet adds a set of the given exercise to the workout in question.

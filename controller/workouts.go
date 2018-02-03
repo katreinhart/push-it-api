@@ -79,7 +79,24 @@ func AddExerciseToWorkout(w http.ResponseWriter, r *http.Request) {
 	buf.ReadFrom(r.Body)
 	b := []byte(buf.String())
 
-	js, err := model.AddExerciseToWorkout(id, b)
+	var ep model.WorkoutExerciseAsPosted
+	var e model.WorkoutExercise
+
+	err := json.Unmarshal(b, &ep)
+
+	if err != nil {
+		handleErrorAndRespond(nil, model.ErrorBadRequest, w)
+		return
+	}
+
+	e, err = model.AddExerciseToWorkout(id, ep)
+
+	if err != nil {
+		handleErrorAndRespond(nil, model.ErrorInternalServer, w)
+		return
+	}
+
+	js, err := json.Marshal(e)
 
 	handleErrorAndRespond(js, err, w)
 }

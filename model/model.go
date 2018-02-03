@@ -63,21 +63,21 @@ type (
 		End       time.Time                    `json:"finish_time"`
 		Rating    int                          `json:"rating"`
 		Comments  string                       `json:"comments"`
-		Exercises []transformedWorkoutExercise `json:"exercises"`
+		Exercises []TransformedWorkoutExercise `json:"exercises"`
 		Sets      []transformedWorkoutSet      `json:"sets"`
 	}
 
 	savedWorkout struct {
 		User      string                       `json:"uid"`
 		WorkoutID string                       `json:"workout_id"`
-		Exercises []transformedWorkoutExercise `json:"exercises"`
+		Exercises []TransformedWorkoutExercise `json:"exercises"`
 	}
 
 	transformedSavedWorkout struct {
 		ID        uint                         `json:"id"`
 		User      string                       `json:"uid"`
 		WorkoutID string                       `json:"workout_id"`
-		Exercises []transformedWorkoutExercise `json:"exercises"`
+		Exercises []TransformedWorkoutExercise `json:"exercises"`
 	}
 
 	exercise struct {
@@ -92,7 +92,7 @@ type (
 		Link string `json:"info_url"`
 	}
 
-	workoutExercise struct {
+	WorkoutExercise struct {
 		gorm.Model
 		WorkoutID      string `json:"workout_id"`
 		ExerciseID     uint   `json:"exercise_id"`
@@ -100,7 +100,7 @@ type (
 		GoalRepsPerSet int    `json:"goal_reps_per_set"`
 	}
 
-	transformedWorkoutExercise struct {
+	TransformedWorkoutExercise struct {
 		WorkoutID      string `json:"workout_id"`
 		ExerciseID     uint   `json:"exercise_id"`
 		ExerciseName   string `json:"exercise_name"`
@@ -108,7 +108,7 @@ type (
 		GoalRepsPerSet int    `json:"goal_reps_per_set"`
 	}
 
-	workoutExerciseAsPosted struct {
+	WorkoutExerciseAsPosted struct {
 		ExerciseName   string `json:"exercise_name"`
 		GoalSets       int    `json:"goal_sets"`
 		GoalRepsPerSet int    `json:"goal_reps"`
@@ -223,6 +223,6 @@ func init() {
 	db.AutoMigrate(&exercise{})
 	db.AutoMigrate(&secondaryGoal{})
 	db.AutoMigrate(&WorkoutModel{})
-	db.AutoMigrate(&workoutExercise{})
+	db.AutoMigrate(&WorkoutExercise{})
 	db.AutoMigrate(&workoutExerciseSet{})
 }
