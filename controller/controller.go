@@ -19,6 +19,8 @@ func handleErrorAndRespond(js []byte, err error, w http.ResponseWriter) {
 			w.WriteHeader(http.StatusInternalServerError)
 		} else if err == model.ErrorForbidden {
 			w.WriteHeader(http.StatusUnauthorized)
+		} else if err == model.ErrorNotFound {
+			w.WriteHeader(http.StatusNotFound)
 		} else {
 			w.WriteHeader(http.StatusInternalServerError)
 		}
