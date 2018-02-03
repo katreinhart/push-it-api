@@ -64,7 +64,7 @@ type (
 		Rating    int                          `json:"rating"`
 		Comments  string                       `json:"comments"`
 		Exercises []TransformedWorkoutExercise `json:"exercises"`
-		Sets      []transformedWorkoutSet      `json:"sets"`
+		Sets      []WorkoutSet                 `json:"sets"`
 	}
 
 	savedWorkout struct {
@@ -92,6 +92,7 @@ type (
 		Link string `json:"info_url"`
 	}
 
+	// WorkoutExercise is the database representation of each exercise performed.
 	WorkoutExercise struct {
 		gorm.Model
 		WorkoutID      string `json:"workout_id"`
@@ -100,6 +101,7 @@ type (
 		GoalRepsPerSet int    `json:"goal_reps_per_set"`
 	}
 
+	// TransformedWorkoutExercise is the representation sent back to the front end
 	TransformedWorkoutExercise struct {
 		WorkoutID      string `json:"workout_id"`
 		ExerciseID     uint   `json:"exercise_id"`
@@ -108,32 +110,27 @@ type (
 		GoalRepsPerSet int    `json:"goal_reps_per_set"`
 	}
 
+	// WorkoutExerciseAsPosted is the representation sent in from the front end
 	WorkoutExerciseAsPosted struct {
 		ExerciseName   string `json:"exercise_name"`
 		GoalSets       int    `json:"goal_sets"`
 		GoalRepsPerSet int    `json:"goal_reps"`
 	}
 
-	workoutExerciseSet struct {
+	// WorkoutExerciseSet is the database representation of a single set
+	WorkoutExerciseSet struct {
 		gorm.Model
-		WorkoutExerciseID string `json:"workout_exercise_id"`
-		WorkoutID         string `json:"workout_id"`
-		ExerciseName      string `json:"exercise_name"`
-		Weight            int    `json:"weight"`
-		RepsAttempted     int    `json:"reps_att"`
-		RepsCompleted     int    `json:"reps_comp"`
-	}
-
-	workoutSetAsPosted struct {
+		WorkoutID     string `json:"workout_id"`
+		ExerciseName  string `json:"exercise_name"`
 		Weight        int    `json:"weight"`
-		Exercise      string `json:"exercise_name"`
 		RepsAttempted int    `json:"reps_att"`
 		RepsCompleted int    `json:"reps_comp"`
 	}
 
-	transformedWorkoutSet struct {
-		ExerciseName  string `json:"exercise"`
+	// WorkoutSet is the representation sent back and forth from the front end
+	WorkoutSet struct {
 		Weight        int    `json:"weight"`
+		Exercise      string `json:"exercise_name"`
 		RepsAttempted int    `json:"reps_att"`
 		RepsCompleted int    `json:"reps_comp"`
 	}
@@ -224,5 +221,5 @@ func init() {
 	db.AutoMigrate(&secondaryGoal{})
 	db.AutoMigrate(&WorkoutModel{})
 	db.AutoMigrate(&WorkoutExercise{})
-	db.AutoMigrate(&workoutExerciseSet{})
+	db.AutoMigrate(&WorkoutExerciseSet{})
 }

@@ -33,10 +33,10 @@ func GetCompletedWorkout(wk WorkoutModel) (CompletedWorkout, error) {
 	var completed CompletedWorkout
 
 	var dbExercises []WorkoutExercise
-	var dbSets []workoutExerciseSet
+	var dbSets []WorkoutExerciseSet
 
 	var _exercises []TransformedWorkoutExercise
-	var _sets []transformedWorkoutSet
+	var _sets []WorkoutSet
 
 	db.Find(&dbExercises, "workout_id = ?", wk.ID)
 
@@ -44,7 +44,7 @@ func GetCompletedWorkout(wk WorkoutModel) (CompletedWorkout, error) {
 		db.Find(&dbSets, "workout_exercise_id = ?", ex.ID)
 		for _, set := range dbSets {
 			name, _ := getExerciseName(ex.ID)
-			_sets = append(_sets, transformedWorkoutSet{ExerciseName: name, Weight: set.Weight, RepsAttempted: set.RepsAttempted, RepsCompleted: set.RepsCompleted})
+			_sets = append(_sets, WorkoutSet{Exercise: name, Weight: set.Weight, RepsAttempted: set.RepsAttempted, RepsCompleted: set.RepsCompleted})
 		}
 		exName, err := getExerciseName(ex.ExerciseID)
 		if err != nil {
@@ -83,27 +83,18 @@ func AddExerciseToWorkout(wid string, ep WorkoutExerciseAsPosted) (WorkoutExerci
 }
 
 // AddExerciseSet adds a set of the given exercise to the workout in question.
-func AddExerciseSet(wid string, b []byte) ([]byte, error) {
-
-	var newSet workoutSetAsPosted
-	var newExSet workoutExerciseSet
-
-	err := json.Unmarshal(b, &newSet)
-
-	if err != nil {
-		return nil, err
-	}
+func AddExerciseSet(wid string, wsp WorkoutSet) (WorkoutExerciseSet, error) {
+	var newExSet WorkoutExerciseSet
 
 	newExSet.WorkoutID = wid
-	newExSet.ExerciseName = newSet.Exercise
-	newExSet.Weight = newSet.Weight
-	newExSet.RepsAttempted = newSet.RepsAttempted
-	newExSet.RepsCompleted = newSet.RepsCompleted
+	newExSet.ExerciseName = wsp.Exercise
+	newExSet.Weight = wsp.Weight
+	newExSet.RepsAttempted = wsp.RepsAttempted
+	newExSet.RepsCompleted = wsp.RepsCompleted
 
 	db.Save(&newExSet)
 
-	js, err := json.Marshal(newExSet)
-	return js, err
+	return newExSet, nil
 }
 
 // MarkWorkoutAsCompleted updates workout given supplied body b
