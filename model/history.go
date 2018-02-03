@@ -7,7 +7,8 @@ import (
 )
 
 // History retrieves all of the given user's completed workouts and returns nested objects
-func History(uid string) ([]byte, error) {
+func History(uid string) ([]CompletedWorkout, error) {
+
 	var workouts []WorkoutModel
 	var _workouts []CompletedWorkout
 
@@ -17,7 +18,7 @@ func History(uid string) ([]byte, error) {
 	// find all workouts in db with user uid
 	db.Find(&workouts, "user_id = ?", uid).Where("completed = ?", true)
 	if len(workouts) == 0 {
-		return nil, errors.New("Not found")
+		return nil, ErrorNotFound
 	}
 
 	// find all associated exercises and sets associated with each workout
@@ -39,9 +40,7 @@ func History(uid string) ([]byte, error) {
 		_workouts = append(_workouts, CompletedWorkout{User: uid, WorkoutID: workoutID, Start: wko.Start, End: wko.End, Rating: wko.Rating, Comments: wko.Comments, Exercises: _exercises, Sets: _sets})
 	}
 
-	js, err := json.Marshal(_workouts)
-
-	return js, err
+	return _workouts, nil
 }
 
 func FetchSavedExercises(uid string) ([]byte, error) {

@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"github.com/katreinhart/push-it-api/model"
@@ -11,7 +12,16 @@ func History(w http.ResponseWriter, r *http.Request) {
 	// Get user ID from token
 	uid, err := GetUIDFromBearerToken(r)
 
-	js, err := model.History(uid)
+	var _workouts []CompletedWorkout
+
+	_workouts, err := model.History(uid)
+
+	if err != nil {
+		handleErrorAndRespond(nil, err, w)
+		return
+	}
+
+	js, err := json.Marshal(_workouts)
 
 	handleErrorAndRespond(js, err, w)
 }
