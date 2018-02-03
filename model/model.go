@@ -69,15 +69,9 @@ type (
 		Sets      []WorkoutSet                 `json:"sets"`
 	}
 
-	savedWorkout struct {
-		User      string                       `json:"uid"`
-		WorkoutID string                       `json:"workout_id"`
-		Exercises []TransformedWorkoutExercise `json:"exercises"`
-	}
-
-	transformedSavedWorkout struct {
-		ID        uint                         `json:"id"`
-		User      string                       `json:"uid"`
+	// SavedWorkout returns information about workout that has not been completed.
+	SavedWorkout struct {
+		UserID    string                       `json:"uid"`
 		WorkoutID string                       `json:"workout_id"`
 		Exercises []TransformedWorkoutExercise `json:"exercises"`
 	}

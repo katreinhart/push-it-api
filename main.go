@@ -65,7 +65,7 @@ func main() {
 	api.HandleFunc("/workouts/{id}/exercises/sets", controller.AddExerciseSet).Methods("POST")
 
 	api.HandleFunc("/history", controller.History).Methods("GET")
-	api.HandleFunc("/saved", controller.FetchSavedExercises).Methods("GET")
+	api.HandleFunc("/saved", controller.FetchSavedWorkouts).Methods("GET")
 
 	// JWT Middleware handles authorization configuration
 	jwtMiddleware := jwtmiddleware.New(jwtmiddleware.Options{
