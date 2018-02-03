@@ -137,19 +137,19 @@ type (
 		FinishedAt time.Time `json:"finished_at"`
 	}
 
-	postedGoals struct {
-		Goal1 postedBasicGoal `json:"goal1"`
-		Goal2 postedBasicGoal `json:"goal2"`
+	// Goals takes in two goals from front end
+	Goals struct {
+		Goal1 SecondaryGoal `json:"goal1"`
+		Goal2 SecondaryGoal `json:"goal2"`
 	}
 
-	postedBasicGoal struct {
-		UserID     string `json:"uid"`
-		GoalDate   string `json:"goal_date"`
-		Exercise   string `json:"exercise"`
-		GoalWeight string `json:"goal_weight"`
+	// GoalResponse is two goals sent back to front end
+	GoalResponse struct {
+		Data []TransformedGoal `json:"data"`
 	}
 
-	secondaryGoal struct {
+	// SecondaryGoal is format saved in the database
+	SecondaryGoal struct {
 		gorm.Model
 		UserID     string    `json:"uid"`
 		GoalDate   time.Time `json:"goal_date"`
@@ -157,24 +157,17 @@ type (
 		GoalWeight int       `json:"goal_weight"`
 	}
 
-	transformedGoal struct {
+	// TransformedGoal is the format sent back to front end
+	TransformedGoal struct {
 		GoalID     int       `json:"goal_id"`
 		UserID     string    `json:"uid"`
-		SetDate    time.Time `json:"set_date"`
 		GoalDate   time.Time `json:"goal_date"`
 		Exercise   string    `json:"exercise"`
 		GoalWeight int       `json:"goal_weight"`
 	}
 
-	goalsResponse struct {
-		Data []transformedGoal `json:"data"`
-	}
-
-	transformedPrimaryGoal struct {
-		Goal string `json:"goal"`
-	}
-
-	updatePrimaryGoal struct {
+	// PrimaryGoal is format for passing primary goal back and forth
+	PrimaryGoal struct {
 		Goal string `json:"goal"`
 	}
 
@@ -215,7 +208,7 @@ func init() {
 
 	db.AutoMigrate(&UserModel{})
 	db.AutoMigrate(&exercise{})
-	db.AutoMigrate(&secondaryGoal{})
+	db.AutoMigrate(&SecondaryGoal{})
 	db.AutoMigrate(&WorkoutModel{})
 	db.AutoMigrate(&WorkoutExercise{})
 	db.AutoMigrate(&WorkoutExerciseSet{})

@@ -1,120 +1,77 @@
 package model
 
 import (
-	"encoding/json"
-	"errors"
 	"fmt"
-	"os"
-	"strconv"
-	"time"
 )
 
 // GetSecondaryGoals fetches the secondary goals in the database.
-func GetSecondaryGoals(uid string) ([]byte, error) {
-	var goals []secondaryGoal
-	var _goals []transformedGoal
-	var _goalResponse goalsResponse
+func GetSecondaryGoals(uid string) (GoalResponse, error) {
+	var goals []SecondaryGoal
+	var _goals []TransformedGoal
+	var _goalResponse GoalResponse
 
 	db.Find(&goals, "user_id = ?", uid)
 
 	if len(goals) == 0 {
 		// respond with 404
-		return nil, errors.New("Not found")
+		return GoalResponse{}, ErrorNotFound
 	}
 
 	for _, item := range goals {
 		id := int(item.ID)
-		_goals = append(_goals, transformedGoal{GoalID: id, UserID: item.UserID, GoalDate: item.GoalDate, GoalWeight: item.GoalWeight, Exercise: item.Exercise})
+		_goals = append(_goals, TransformedGoal{GoalID: id, UserID: item.UserID, GoalDate: item.GoalDate, GoalWeight: item.GoalWeight, Exercise: item.Exercise})
 	}
 
-	_goalResponse = goalsResponse{Data: _goals}
+	_goalResponse = GoalResponse{Data: _goals}
 
-	js, err := json.Marshal(_goalResponse)
-
-	return js, err
+	return _goalResponse, nil
 }
 
 // PostSecondaryGoals creates or updates goals in the database.
-func PostSecondaryGoals(uid string, b []byte) ([]byte, error) {
-	fmt.Println("Post secondary goals MODEL function")
-	var goals []secondaryGoal
-	var postGoals postedGoals
-	var goal1, goal2 secondaryGoal
+func PostSecondaryGoals(uid string, g1 SecondaryGoal, g2 SecondaryGoal) (Goals, error) {
 
-	// Unmarshal the JSON formatted data b into the struct
-	err := json.Unmarshal(b, &postGoals)
-
-	if err != nil {
-		// handle error
-		fmt.Println("JSON error")
-		fmt.Fprintf(os.Stdout, "%#v", postGoals)
-		return nil, errors.New("error marshaling json object")
-	}
-
-	// Calculate the dates
-	date1, err := time.Parse("2006-01-02T15:04:05Z07:00", postGoals.Goal1.GoalDate)
-	date2, err := time.Parse("2006-01-02T15:04:05Z07:00", postGoals.Goal2.GoalDate)
-
-	fmt.Println(postGoals.Goal1.GoalDate)
-	fmt.Println(postGoals.Goal2.GoalDate)
-	fmt.Println(date1, "\n", date2)
-
-	weight1, err := strconv.Atoi(postGoals.Goal1.GoalWeight)
-	weight2, err := strconv.Atoi(postGoals.Goal2.GoalWeight)
-
-	if err != nil {
-		fmt.Println("Something went wrong parsing data")
-		return nil, errors.New("Something went wrong")
-	}
+	var goals []SecondaryGoal
 
 	db.Find(&goals, "user_id = ?", uid)
 	if len(goals) > 0 {
-		// overwrite existing goals
-		fmt.Println("overwriting existing goals")
-		db.Delete(&goal1)
-		db.Delete(&goal2)
+		db.Delete(&goals)
 	}
+
 	// create new goals
-	goal1 = secondaryGoal{UserID: uid, GoalDate: date1, GoalWeight: weight1, Exercise: postGoals.Goal1.Exercise}
-	goal2 = secondaryGoal{UserID: uid, GoalDate: date2, GoalWeight: weight2, Exercise: postGoals.Goal2.Exercise}
+	fmt.Println(g1.GoalDate, g1.GoalWeight, g1.Exercise)
+	fmt.Println(g2.GoalDate, g2.GoalWeight, g2.Exercise)
+
+	goal1 := SecondaryGoal{UserID: uid, GoalDate: g1.GoalDate, GoalWeight: g1.GoalWeight, Exercise: g1.Exercise}
+	goal2 := SecondaryGoal{UserID: uid, GoalDate: g2.GoalDate, GoalWeight: g2.GoalWeight, Exercise: g2.Exercise}
 	db.Save(&goal1)
 	db.Save(&goal2)
 
-	fmt.Println("DB saved")
 	fmt.Println(goal1, goal2)
 
 	// Return a success message (maybe edit later to return the question?)
-	return []byte("{\"message\": \"Goals successfully added\"}"), nil
+	return Goals{Goal1: goal1, Goal2: goal2}, nil
 }
 
 // GetPrimaryGoal fetches the user's primary goal from the Users db table
-func GetPrimaryGoal(uid string) ([]byte, error) {
+func GetPrimaryGoal(uid string) (PrimaryGoal, error) {
 	var user UserModel
+
 	db.First(&user, "id = ?", uid)
 	if user.ID == 0 {
-		return nil, errors.New("Not found")
+		return PrimaryGoal{}, ErrorNotFound
 	}
 
-	var _goal = transformedPrimaryGoal{Goal: user.Goal}
+	var _goal = PrimaryGoal{Goal: user.Goal}
 
-	js, err := json.Marshal(_goal)
-
-	return js, err
+	return _goal, nil
 }
 
 // SetPrimaryGoal updates the user's primary goal in the database.
-func SetPrimaryGoal(uid string, b []byte) ([]byte, error) {
+func SetPrimaryGoal(uid string, newGoal PrimaryGoal) (PrimaryGoal, error) {
 	var user UserModel
-	var newGoal updatePrimaryGoal
 
-	err := json.Unmarshal(b, &newGoal)
-
-	if err != nil {
-		return nil, errors.New("Something went wrong")
-	}
 	db.First(&user, "id = ?", uid)
 	db.Model(&user).Update("goal", newGoal.Goal)
 
-	return []byte("{\"message\": \"Goal successfully updated\"}"), nil
-
+	return newGoal, nil
 }
