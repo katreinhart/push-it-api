@@ -72,6 +72,7 @@ type (
 	// SavedWorkout returns information about workout that has not been completed.
 	SavedWorkout struct {
 		UserID    string                       `json:"uid"`
+		CreatedAt time.Time                    `json:"created"`
 		WorkoutID string                       `json:"workout_id"`
 		Exercises []TransformedWorkoutExercise `json:"exercises"`
 	}

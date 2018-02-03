@@ -64,7 +64,7 @@ func FetchSavedWorkouts(uid string) ([]SavedWorkout, error) {
 			_exercises = append(_exercises, TransformedWorkoutExercise{WorkoutID: strID, ExerciseID: ex.ID, ExerciseName: exerciseName, GoalSets: ex.GoalSets, GoalRepsPerSet: ex.GoalRepsPerSet})
 		}
 		workoutID := strconv.Itoa(int(wko.ID))
-		_workouts = append(_workouts, SavedWorkout{UserID: uid, WorkoutID: workoutID, Exercises: _exercises})
+		_workouts = append(_workouts, SavedWorkout{UserID: uid, CreatedAt: wko.CreatedAt, WorkoutID: workoutID, Exercises: _exercises})
 	}
 
 	return _workouts, nil
