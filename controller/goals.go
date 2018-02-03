@@ -111,7 +111,7 @@ func SetPrimaryGoal(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	goal := model.SetPrimaryGoal(uid, newGoal)
+	goal, err := model.SetPrimaryGoal(uid, newGoal)
 	if err != nil {
 		handleErrorAndRespond(nil, err, w)
 		return
