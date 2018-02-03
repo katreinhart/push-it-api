@@ -1,8 +1,6 @@
 package model
 
 import (
-	"encoding/json"
-	"errors"
 	"strconv"
 )
 
@@ -30,7 +28,7 @@ func History(uid string) ([]CompletedWorkout, error) {
 		db.Find(&exercises, "workout_id = ?", wko.ID)
 		for _, ex := range exercises {
 			var exerciseName, _ = getExerciseName(ex.ExerciseID)
-			_exercises = append(_exercises, TransformedWorkoutExercise{WorkoutID: strID, ExerciseID: ex.ID, ExerciseName: exerciseName, GoalSets: ex.GoalRepsPerSet, GoalRepsPerSet: ex.GoalRepsPerSet})
+			_exercises = append(_exercises, TransformedWorkoutExercise{WorkoutID: strID, ExerciseID: ex.ID, ExerciseName: exerciseName, GoalSets: ex.GoalSets, GoalRepsPerSet: ex.GoalRepsPerSet})
 		}
 		db.Find(&sets, "workout_id = ?", strID)
 		for _, set := range sets {
@@ -43,15 +41,16 @@ func History(uid string) ([]CompletedWorkout, error) {
 	return _workouts, nil
 }
 
-func FetchSavedExercises(uid string) ([]byte, error) {
+// FetchSavedWorkouts returns all workouts that have not been completed
+func FetchSavedWorkouts(uid string) ([]SavedWorkout, error) {
 	var workouts []WorkoutModel
-	var _workouts []savedWorkout
+	var _workouts []SavedWorkout
 	var exercises []WorkoutExercise
 
 	// find all workouts in db with user uid
 	db.Find(&workouts, "user_id = ?", uid).Where("completed = ?", false)
 	if len(workouts) == 0 {
-		return nil, errors.New("Not found")
+		return nil, ErrorNotFound
 	}
 
 	// find all associated exercises and sets associated with each workout
@@ -65,10 +64,8 @@ func FetchSavedExercises(uid string) ([]byte, error) {
 			_exercises = append(_exercises, TransformedWorkoutExercise{WorkoutID: strID, ExerciseID: ex.ID, ExerciseName: exerciseName, GoalSets: ex.GoalSets, GoalRepsPerSet: ex.GoalRepsPerSet})
 		}
 		workoutID := strconv.Itoa(int(wko.ID))
-		_workouts = append(_workouts, savedWorkout{User: uid, WorkoutID: workoutID, Exercises: _exercises})
+		_workouts = append(_workouts, SavedWorkout{UserID: uid, WorkoutID: workoutID, Exercises: _exercises})
 	}
 
-	js, err := json.Marshal(_workouts)
-
-	return js, err
+	return _workouts, nil
 }
