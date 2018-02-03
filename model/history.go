@@ -14,7 +14,7 @@ func History(uid string) ([]CompletedWorkout, error) {
 	var sets []WorkoutExerciseSet
 
 	// find all workouts in db with user uid
-	db.Find(&workouts, "user_id = ?", uid).Where("completed = ?", true)
+	db.Where("user_id = ? AND completed = ?", uid, true).Find(&workouts)
 	if len(workouts) == 0 {
 		return nil, ErrorNotFound
 	}
@@ -48,7 +48,7 @@ func FetchSavedWorkouts(uid string) ([]SavedWorkout, error) {
 	var exercises []WorkoutExercise
 
 	// find all workouts in db with user uid
-	db.Find(&workouts, "user_id = ?", uid).Where("completed = ?", false)
+	db.Where("user_id = ? AND completed = ?", uid, false).Find(&workouts)
 	if len(workouts) == 0 {
 		return nil, ErrorNotFound
 	}
