@@ -77,13 +77,15 @@ type (
 		Exercises []TransformedWorkoutExercise `json:"exercises"`
 	}
 
-	exercise struct {
+	// Exercise is the storage representation of an individual exercise.
+	Exercise struct {
 		gorm.Model
 		Name string `json:"ex_name"`
 		Link string `json:"info_url"`
 	}
 
-	transformedExercise struct {
+	// TransformedExercise is the version sent back to the front end.
+	TransformedExercise struct {
 		ID   uint   `json:"id"`
 		Name string `json:"ex_name"`
 		Link string `json:"info_url"`
@@ -211,7 +213,7 @@ func init() {
 	}
 
 	db.AutoMigrate(&UserModel{})
-	db.AutoMigrate(&exercise{})
+	db.AutoMigrate(&Exercise{})
 	db.AutoMigrate(&SecondaryGoal{})
 	db.AutoMigrate(&WorkoutModel{})
 	db.AutoMigrate(&WorkoutExercise{})

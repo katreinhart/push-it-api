@@ -1,85 +1,66 @@
 package model
 
-import (
-	"encoding/json"
-	"errors"
-)
-
 // ListExercises returns all available exercises
-func ListExercises() ([]byte, error) {
+func ListExercises() ([]TransformedExercise, error) {
 
-	var exercises []exercise
-	var _exercises []transformedExercise
+	var exs []Exercise
+	var _exs []TransformedExercise
 
-	db.Find(&exercises)
+	db.Find(&exs)
 
-	if len(exercises) == 0 {
-		return nil, errors.New("Not found")
+	if len(exs) == 0 {
+		return nil, ErrorNotFound
 	}
 
 	// transform exercises
-	for _, item := range exercises {
-		_exercises = append(_exercises, transformedExercise{ID: item.ID, Name: item.Name, Link: item.Link})
+	for _, item := range exs {
+		_exs = append(_exs, TransformedExercise{ID: item.ID, Name: item.Name, Link: item.Link})
 	}
 
-	// marshal into json
-	js, err := json.Marshal(_exercises)
-
-	// return js, err
-	return js, err
+	return _exs, nil
 }
 
 // FetchSingleExercise finds exercise matching id in database and returns JSON
-func FetchSingleExercise(id string) ([]byte, error) {
-	var exercise exercise
+func FetchSingleExercise(id string) (TransformedExercise, error) {
+	var ex Exercise
 
-	db.First(&exercise, id)
+	db.First(&ex, id)
 
-	if exercise.ID == 0 {
-		return nil, errors.New("Not found")
+	if ex.ID == 0 {
+		return TransformedExercise{}, ErrorNotFound
 	}
 
-	_exercise := transformedExercise{ID: exercise.ID, Name: exercise.Name, Link: exercise.Link}
+	_ex := TransformedExercise{ID: ex.ID, Name: ex.Name, Link: ex.Link}
 
-	js, err := json.Marshal(_exercise)
-
-	return js, err
+	return _ex, nil
 }
 
 // CreateExercise adds an exercise to the database.
-func CreateExercise(b []byte) ([]byte, error) {
+func CreateExercise(ex Exercise) TransformedExercise {
 
-	// create data
-	var exercise exercise
-
-	err := json.Unmarshal(b, &exercise)
-	if err != nil {
-		return nil, errors.New("Something went wrong")
-	}
-
-	db.Save(&exercise)
+	db.Save(&ex)
 
 	// Return a success message (maybe edit later to return the exercise?)
-	return []byte("{\"message\": \"Exercise successfully added\"}"), nil
+	return TransformedExercise{ID: ex.ID, Name: ex.Name, Link: ex.Link}
 }
 
 func getExerciseID(exerciseName string) (uint, error) {
-	var dbExercise exercise
+	var dbExercise Exercise
 
 	db.Find(&dbExercise, "name = ?", exerciseName)
 	if dbExercise.ID == 0 {
-		return 0, errors.New("Not found")
+		return 0, ErrorNotFound
 	}
 
 	return dbExercise.ID, nil
 }
 
 func getExerciseName(eid uint) (string, error) {
-	var exercise exercise
+	var exercise Exercise
 	db.Find(&exercise, "id = ?", eid)
 
 	if exercise.ID == 0 {
-		return "", errors.New("Not found")
+		return "", ErrorNotFound
 	}
 
 	return exercise.Name, nil
