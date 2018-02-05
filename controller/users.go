@@ -81,6 +81,7 @@ func SetUserInfo(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		handleErrorAndRespond(nil, model.ErrorInternalServer, w)
+		return
 	}
 	_userID := uint(userID)
 
