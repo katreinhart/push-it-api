@@ -51,9 +51,6 @@ func PostSecondaryGoals(w http.ResponseWriter, r *http.Request) {
 	goal1 := pgs.Goal1
 	goal2 := pgs.Goal2
 
-	fmt.Println(goal1.Exercise, goal1.GoalDate, goal1.GoalWeight)
-	fmt.Println(goal2.Exercise, goal2.GoalDate, goal2.GoalWeight)
-
 	if err != nil {
 		handleErrorAndRespond(nil, err, w)
 		return

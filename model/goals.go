@@ -37,12 +37,9 @@ func PostSecondaryGoals(uid string, g1 SecondaryGoal, g2 SecondaryGoal) (Goals, 
 		db.Delete(&goals)
 	}
 
-	// create new goals
-	fmt.Println(g1.GoalDate, g1.GoalWeight, g1.Exercise)
-	fmt.Println(g2.GoalDate, g2.GoalWeight, g2.Exercise)
-
 	goal1 := SecondaryGoal{UserID: uid, GoalDate: g1.GoalDate, GoalWeight: g1.GoalWeight, Exercise: g1.Exercise}
 	goal2 := SecondaryGoal{UserID: uid, GoalDate: g2.GoalDate, GoalWeight: g2.GoalWeight, Exercise: g2.Exercise}
+
 	db.Save(&goal1)
 	db.Save(&goal2)
 
