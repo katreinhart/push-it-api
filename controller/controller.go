@@ -25,10 +25,7 @@ func handleErrorAndRespond(js []byte, err error, w http.ResponseWriter) {
 			w.WriteHeader(http.StatusInternalServerError)
 		}
 
-		// message := js
-
-		// in any case, send back the message if there is one
-		w.Write([]byte("Something weird"))
+		w.Write(js)
 		return
 	}
 

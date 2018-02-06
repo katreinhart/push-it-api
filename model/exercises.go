@@ -56,12 +56,12 @@ func getExerciseID(exerciseName string) (uint, error) {
 }
 
 func getExerciseName(eid uint) (string, error) {
-	var e Exercise
-	db.Find(&e, "id = ?", eid)
+	var ex Exercise
+	db.Find(&ex, "id = ?", eid)
 
-	if e.ID == 0 {
+	if ex.ID == 0 {
 		return "", ErrorNotFound
 	}
 
-	return e.Name, nil
+	return ex.Name, nil
 }
