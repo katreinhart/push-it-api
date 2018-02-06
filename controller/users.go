@@ -3,7 +3,6 @@ package controller
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -113,7 +112,7 @@ func GetUIDFromBearerToken(r *http.Request) (string, error) {
 
 	// no token present, so this is an unauthorized request.
 	if tok == nil {
-		err = errors.New("Forbidden")
+		err = model.ErrorForbidden
 	}
 
 	// get claims from token
@@ -124,7 +123,7 @@ func GetUIDFromBearerToken(r *http.Request) (string, error) {
 
 	// Error parsing uid from token.
 	if !ok {
-		err = errors.New("Forbidden")
+		err = model.ErrorForbidden
 	}
 
 	// UID parsed from token is of type float64; we need it as a string.

@@ -13,8 +13,8 @@ func ListExercises() ([]TransformedExercise, error) {
 	}
 
 	// transform exercises
-	for _, item := range exs {
-		_exs = append(_exs, TransformedExercise{ID: item.ID, Name: item.Name, Link: item.Link})
+	for _, i := range exs {
+		_exs = append(_exs, TransformedExercise{ID: i.ID, Name: i.Name, Link: i.Link})
 	}
 
 	return _exs, nil
@@ -45,23 +45,23 @@ func CreateExercise(ex Exercise) TransformedExercise {
 }
 
 func getExerciseID(exerciseName string) (uint, error) {
-	var dbExercise Exercise
+	var ex Exercise
 
-	db.Find(&dbExercise, "name = ?", exerciseName)
-	if dbExercise.ID == 0 {
+	db.Find(&ex, "name = ?", exerciseName)
+	if ex.ID == 0 {
 		return 0, ErrorNotFound
 	}
 
-	return dbExercise.ID, nil
+	return ex.ID, nil
 }
 
 func getExerciseName(eid uint) (string, error) {
-	var exercise Exercise
-	db.Find(&exercise, "id = ?", eid)
+	var e Exercise
+	db.Find(&e, "id = ?", eid)
 
-	if exercise.ID == 0 {
+	if e.ID == 0 {
 		return "", ErrorNotFound
 	}
 
-	return exercise.Name, nil
+	return e.Name, nil
 }
