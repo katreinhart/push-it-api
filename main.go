@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 
@@ -74,6 +75,8 @@ func main() {
 		},
 		SigningMethod: jwt.SigningMethodHS256,
 	})
+
+	fmt.Println(os.Getenv("SECRET"))
 
 	// muxRouter uses Negroni & handles the middleware for authorization
 	muxRouter := http.NewServeMux()
