@@ -1,9 +1,5 @@
 package model
 
-import (
-	"fmt"
-)
-
 // GetSecondaryGoals fetches the secondary goals in the database.
 func GetSecondaryGoals(uid string) (GoalResponse, error) {
 	var goals []SecondaryGoal
@@ -42,8 +38,6 @@ func PostSecondaryGoals(uid string, g1 SecondaryGoal, g2 SecondaryGoal) (Goals, 
 
 	db.Save(&goal1)
 	db.Save(&goal2)
-
-	fmt.Println(goal1, goal2)
 
 	// Return a success message (maybe edit later to return the question?)
 	return Goals{Goal1: goal1, Goal2: goal2}, nil

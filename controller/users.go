@@ -3,7 +3,6 @@ package controller
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -94,7 +93,6 @@ func SetUserInfo(w http.ResponseWriter, r *http.Request) {
 
 	_u, err := model.SetUserInfo(_userID, u)
 	if err != nil {
-		fmt.Println("something went wrong")
 		handleErrorAndRespond(nil, err, w)
 		return
 	}

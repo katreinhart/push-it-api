@@ -3,7 +3,6 @@ package controller
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/katreinhart/push-it-api/model"
@@ -46,7 +45,6 @@ func PostSecondaryGoals(w http.ResponseWriter, r *http.Request) {
 
 	var pgs model.Goals
 	err = json.Unmarshal(b, &pgs)
-	fmt.Println(pgs)
 
 	goal1 := pgs.Goal1
 	goal2 := pgs.Goal2
