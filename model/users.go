@@ -1,6 +1,7 @@
 package model
 
 import (
+	"fmt"
 	"os"
 	"time"
 
@@ -134,6 +135,7 @@ func createAndSignJWT(user UserModel) (string, error) {
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, c)
 	secret := []byte(os.Getenv("SECRET"))
+	fmt.Println(secret)
 	t, err := token.SignedString(secret)
 	return t, err
 }
